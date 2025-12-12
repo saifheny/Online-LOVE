@@ -180,6 +180,8 @@
     </div>
 
     <div id="requests-container"></div>
+    <!-- حاوية عناصر الصوت المخفية -->
+    <div id="audio-container" style="display: none;"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -213,7 +215,12 @@
         let audioCtx;
         const analysers = {}; // uid -> AnalyserNode
         
-        const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+        const rtcConfig = { 
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' }
+            ] 
+        };
 
         // --- Setup ---
         window.onload = async () => {
@@ -261,16 +268,21 @@
         // --- Core ---
         window.enterSite = async () => {
             try {
-                // Init Audio Context on user gesture
+                // 1. Init Audio Context and RESUME it immediately (User Gesture)
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') {
+                    await audioCtx.resume();
+                }
                 
+                // 2. Get Mic
                 localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 
-                // Hook up local visualizer (don't connect to destination to avoid echo)
+                // 3. Setup Local Visualizer
                 setupLocalAudio(localStream);
 
             } catch (err) {
-                alert("الميكروفون مطلوب للاتصال");
+                console.error(err);
+                alert("الميكروفون مطلوب للاتصال. يرجى التأكد من السماح له.");
                 return;
             }
 
@@ -282,8 +294,9 @@
             const src = audioCtx.createMediaStreamSource(stream);
             const analyser = audioCtx.createAnalyser();
             analyser.fftSize = 64;
-            analyser.smoothingTimeConstant = 0.5;
+            analyser.smoothingTimeConstant = 0.6; // Smoother visual
             src.connect(analyser);
+            // DO NOT connect to destination (speakers) to avoid echo
             analysers[myUser.id] = analyser;
         }
 
@@ -351,18 +364,22 @@
             listenForSignals();
         }
 
-        // --- WebRTC & Audio Routing ---
+        // --- WebRTC & Audio Routing (Fixed) ---
         function handlePeerConnections(users) {
             Object.keys(users).forEach(uid => {
                 if (uid === myUser.id) return;
                 if (!peerConnections[uid]) startPeerConnection(uid);
             });
 
+            // Cleanup
             Object.keys(peerConnections).forEach(uid => {
                 if (!users[uid]) {
-                    peerConnections[uid].close();
+                    if(peerConnections[uid]) peerConnections[uid].close();
                     delete peerConnections[uid];
-                    delete analysers[uid]; // Cleanup visualizer
+                    delete analysers[uid]; 
+                    // Remove audio element
+                    const el = document.getElementById(`audio-${uid}`);
+                    if(el) el.remove();
                 }
             });
         }
@@ -371,23 +388,38 @@
             const pc = new RTCPeerConnection(rtcConfig);
             peerConnections[targetUid] = pc;
 
+            // Add tracks
             localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
 
+            // HANDLE INCOMING STREAM
             pc.ontrack = (event) => {
-                // Create audio stream for this user
                 const remoteStream = event.streams[0];
                 
-                // IMPORTANT: Connect to AudioContext for Playback AND Visualization
+                // 1. PLAYBACK: Create HTML Audio Element (Most Reliable)
+                let audioEl = document.getElementById(`audio-${targetUid}`);
+                if (!audioEl) {
+                    audioEl = document.createElement('audio');
+                    audioEl.id = `audio-${targetUid}`;
+                    audioEl.autoplay = true;
+                    audioEl.playsInline = true; // For iOS
+                    document.getElementById('audio-container').appendChild(audioEl);
+                }
+                audioEl.srcObject = remoteStream;
+                audioEl.play().catch(e => console.log("Audio play error", e));
+
+                // 2. VISUALIZATION: Clone for Web Audio API
+                // We use a clone or connect the stream to analyzer WITHOUT connecting to destination
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                
                 const src = audioCtx.createMediaStreamSource(remoteStream);
                 const analyser = audioCtx.createAnalyser();
                 analyser.fftSize = 64;
-                analyser.smoothingTimeConstant = 0.5;
-                
-                // Chain: Source -> Analyser -> Destination (Speakers)
+                analyser.smoothingTimeConstant = 0.6;
                 src.connect(analyser);
-                analyser.connect(audioCtx.destination);
+                // NOTE: Do NOT connect analyser to audioCtx.destination here, 
+                // because the <audio> tag is already playing the sound. 
+                // Connecting it again would cause echo or double volume.
                 
-                // Store analyser for drawing
                 analysers[targetUid] = analyser;
             };
 
@@ -396,7 +428,7 @@
             };
 
             if (myUser.id < targetUid) {
-                pc.createOffer().then(offer => {
+                pc.createOffer({ offerToReceiveAudio: true }).then(offer => {
                     pc.setLocalDescription(offer);
                     sendSignal(targetUid, { type: 'offer', sdp: offer });
                 });
@@ -422,24 +454,19 @@
                 
                 const centerX = canvas.width / 2;
                 const centerY = canvas.height / 2;
-                const radius = 38; // Slightly larger than avatar
+                const radius = 38; 
                 
-                // Draw circular bars (Tower view)
                 const bars = 20;
                 const step = (Math.PI * 2) / bars;
                 
                 for (let i = 0; i < bars; i++) {
-                    // Map frequency data to bars
                     const val = dataArray[i] || 0;
-                    const barHeight = (val / 255) * 30; // Max height
-                    
+                    const barHeight = (val / 255) * 30;
                     const angle = i * step;
                     
-                    // Start point (on circle)
                     const x1 = centerX + Math.cos(angle) * radius;
                     const y1 = centerY + Math.sin(angle) * radius;
                     
-                    // End point (outwards)
                     const x2 = centerX + Math.cos(angle) * (radius + barHeight);
                     const y2 = centerY + Math.sin(angle) * (radius + barHeight);
                     
@@ -447,7 +474,8 @@
                     ctx.moveTo(x1, y1);
                     ctx.lineTo(x2, y2);
                     ctx.lineWidth = 4;
-                    ctx.strokeStyle = val > 10 ? `hsl(180, 100%, 50%)` : 'rgba(255,255,255,0.1)';
+                    // Dynamic color based on volume
+                    ctx.strokeStyle = val > 10 ? `hsl(180, 100%, 50%)` : 'rgba(255,255,255,0.05)';
                     ctx.lineCap = 'round';
                     ctx.stroke();
                 }
@@ -458,20 +486,14 @@
         function renderUsers(users) {
             const grid = document.getElementById('users-grid');
             
-            // Only add/remove if diff to avoid canvas redraw flicker
-            // Simple approach: re-render, but canvas is tricky. 
-            // Better: Check existence.
-            
-            const currentIds = Object.keys(users);
-            
-            // Remove old
+            // Cleanup old
             Array.from(grid.children).forEach(child => {
                 const uid = child.id.replace('card-', '');
                 if (!users[uid]) child.remove();
             });
 
             // Add/Update
-            currentIds.forEach(uid => {
+            Object.keys(users).forEach(uid => {
                 const u = users[uid];
                 let card = document.getElementById(`card-${uid}`);
                 
@@ -490,14 +512,13 @@
                     grid.appendChild(card);
                 }
                 
-                // Update Mute Status
                 const muteIcon = card.querySelector(`#mute-${uid}`);
                 if (u.muted) muteIcon.classList.remove('hidden');
                 else muteIcon.classList.add('hidden');
             });
         }
 
-        // --- Signaling & Actions --- (Standard)
+        // --- Signaling ---
         function sendSignal(target, data) {
             push(ref(db, `rooms/${currentRoom}/signals/${target}/${myUser.id}`), data);
         }
@@ -529,7 +550,9 @@
                 } else if (signal.type === 'candidate') {
                     await pc.addIceCandidate(new RTCIceCandidate(signal.candidate));
                 }
-            } catch(e) {}
+            } catch(e) {
+                console.warn("Signaling error", e);
+            }
         }
 
         // Admin & Controls
