@@ -3,20 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>GhostVoice - مجهول</title>
+    <title>GhostVoice - اتصال مشفر</title>
     
-    <!-- خط كايرو وأيقونات -->
+    <!-- الخطوط والأيقونات -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <!-- مكتبة PeerJS لنقل الصوت الحقيقي -->
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+
     <style>
         :root {
             --bg-dark: #050505;
             --glass: rgba(255, 255, 255, 0.05);
             --border: rgba(255, 255, 255, 0.1);
             --primary: #ffffff;
+            --danger: #ff4757;
+            --success: #2ed573;
             --text-gray: #888;
-            --safe-area: env(safe-area-inset-bottom, 20px);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; outline: none; }
@@ -31,113 +34,135 @@
             flex-direction: column;
         }
 
-        /* خلفية شبكية متحركة */
         .bg-mesh {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: 
-                radial-gradient(circle at 15% 50%, rgba(100, 100, 100, 0.05), transparent 25%),
-                radial-gradient(circle at 85% 30%, rgba(200, 200, 200, 0.05), transparent 25%);
+            background: radial-gradient(circle at 50% 50%, rgba(30,30,30,0.3), transparent 70%);
             z-index: 0;
         }
 
-        /* الحاوية الرئيسية */
         .app-view {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 10; display: flex; flex-direction: column;
-            opacity: 0; pointer-events: none; transition: 0.5s ease;
-            transform: scale(0.95);
+            opacity: 0; pointer-events: none; transition: 0.4s ease;
+            transform: scale(0.98);
         }
         .app-view.active { opacity: 1; pointer-events: all; transform: scale(1); }
 
-        /* العناصر الجمالية */
+        /* الشاشة الرئيسية */
+        .home-container {
+            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 20px; text-align: center;
+        }
+
         .mystery-badge {
-            width: 120px; height: 120px; border-radius: 50%;
-            margin: 0 auto 30px;
+            width: 100px; height: 100px; border-radius: 50%;
+            margin-bottom: 20px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 3.5rem; font-weight: 900;
-            box-shadow: 0 0 50px rgba(255,255,255,0.1);
-            border: 4px solid rgba(255,255,255,0.1);
+            font-size: 3rem; font-weight: 900;
+            box-shadow: 0 0 40px rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
             position: relative;
         }
-        .mystery-badge::after {
-            content: ''; position: absolute; inset: -10px; border-radius: 50%;
-            border: 2px dashed rgba(255,255,255,0.2); animation: spin 20s linear infinite;
+
+        .btn-main {
+            width: 100%; max-width: 320px; padding: 18px;
+            background: white; color: black; border: none;
+            border-radius: 16px; font-size: 1.1rem; font-weight: bold;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: 0.3s; margin-top: 20px;
         }
+        .btn-main:active { transform: scale(0.95); }
 
-        h1 { font-size: 2.5rem; text-align: center; margin-bottom: 10px; letter-spacing: -1px; }
-        p { text-align: center; color: var(--text-gray); max-width: 80%; margin: 0 auto 40px; line-height: 1.6; }
-
-        /* الأزرار */
-        .btn-ghost {
-            width: 80%; max-width: 300px; padding: 20px; margin: 10px auto;
-            background: var(--glass); border: 1px solid var(--border);
-            border-radius: 20px; color: white; font-size: 1.2rem; font-weight: bold;
-            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 15px;
-            transition: 0.3s; position: relative; overflow: hidden;
-        }
-        .btn-ghost:active { transform: scale(0.96); background: rgba(255,255,255,0.1); }
-        .btn-ghost i { font-size: 1rem; }
-
-        /* البطاقات في الداشبورد */
-        .identity-card {
-            background: linear-gradient(145deg, rgba(255,255,255,0.05), transparent);
+        /* مفتاح الخصوصية */
+        .toggle-wrapper {
+            display: flex; align-items: center; gap: 15px; margin-top: 15px;
+            background: var(--glass); padding: 10px 20px; border-radius: 50px;
             border: 1px solid var(--border);
-            border-radius: 24px; padding: 30px; margin: 20px;
-            text-align: center;
         }
+        .switch {
+            position: relative; display: inline-block; width: 50px; height: 26px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; inset: 0; background-color: #333;
+            transition: .4s; border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 20px; width: 20px;
+            left: 3px; bottom: 3px; background-color: white;
+            transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--success); }
+        input:checked + .slider:before { transform: translateX(24px); }
 
-        /* شبكة الغرفة */
+        /* شاشة الغرفة */
+        .room-header {
+            padding: 20px; display: flex; justify-content: space-between; align-items: center;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+        }
+        
         .grid-container {
             display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;
-            padding: 20px; overflow-y: auto; padding-bottom: 100px;
+            padding: 20px; overflow-y: auto; padding-bottom: 120px;
         }
-        .user-blob {
-            aspect-ratio: 1; border-radius: 30px;
-            background: rgba(20,20,20,0.6); border: 1px solid var(--border);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            position: relative; transition: 0.3s;
-        }
-        .user-blob.speaking { border-color: white; box-shadow: 0 0 20px rgba(255,255,255,0.2); transform: scale(1.02); }
-        
-        .blob-avatar {
-            width: 60px; height: 60px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.8rem; font-weight: 800; color: rgba(0,0,0,0.7);
-            margin-bottom: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-        .blob-name { font-size: 0.9rem; font-family: monospace; opacity: 0.7; }
-        .mic-icon { position: absolute; top: 10px; right: 10px; font-size: 0.8rem; opacity: 0.5; }
 
-        /* شريط التحكم السفلي */
+        .user-blob {
+            aspect-ratio: 1; border-radius: 24px;
+            background: rgba(30,30,30,0.4); border: 1px solid var(--border);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            position: relative; transition: 0.2s;
+        }
+        .user-blob.speaking { border-color: var(--success); box-shadow: 0 0 20px rgba(46, 213, 115, 0.2); transform: scale(1.02); }
+        .blob-avatar {
+            width: 50px; height: 50px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; font-weight: 800; margin-bottom: 8px;
+        }
+
+        /* شريط التحكم */
         .dock {
             position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: rgba(20,20,20,0.9); backdrop-filter: blur(20px);
-            padding: 10px 20px; border-radius: 40px; border: 1px solid var(--border);
-            display: flex; gap: 20px; z-index: 100;
+            background: rgba(20,20,20,0.95); backdrop-filter: blur(10px);
+            padding: 10px 25px; border-radius: 100px; border: 1px solid var(--border);
+            display: flex; gap: 20px; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         .dock-btn {
-            width: 50px; height: 50px; border-radius: 50%; border: none;
-            background: rgba(255,255,255,0.05); color: white; font-size: 1.2rem;
+            width: 55px; height: 55px; border-radius: 50%; border: none;
+            background: rgba(255,255,255,0.1); color: white; font-size: 1.3rem;
             display: flex; align-items: center; justify-content: center; cursor: pointer;
+            transition: 0.3s;
         }
         .dock-btn.active { background: white; color: black; }
-        .dock-btn.danger { color: #ff4757; background: rgba(255, 71, 87, 0.1); }
+        .dock-btn.danger { background: rgba(255, 71, 87, 0.2); color: var(--danger); }
+        .dock-btn.danger:active { background: var(--danger); color: white; }
+
+        /* شاشة الانتظار والموافقة */
+        .waiting-screen {
+            display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;
+            text-align: center; padding: 30px;
+        }
+        .requests-list {
+            position: absolute; top: 70px; right: 20px; left: 20px;
+            display: flex; flex-direction: column; gap: 10px; z-index: 50;
+        }
+        .request-item {
+            background: rgba(50,50,50,0.9); padding: 15px; border-radius: 12px;
+            display: flex; justify-content: space-between; align-items: center;
+            border: 1px solid var(--border); animation: slideDown 0.3s ease;
+        }
+        @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
         /* بوابة الصوت */
         .audio-gate {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.92);
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
             z-index: 200; display: flex; flex-direction: column;
             align-items: center; justify-content: center;
-            opacity: 0; pointer-events: none; transition: 0.4s;
+            opacity: 0; pointer-events: none; transition: 0.4s; padding: 20px; text-align: center;
         }
         .audio-gate.show { opacity: 1; pointer-events: all; }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
-        
-        /* تأثيرات التحميل */
-        .glitch-text { position: relative; }
-        .glitch-text::before { content: attr(data-text); position: absolute; left: 2px; text-shadow: -1px 0 red; clip: rect(24px, 550px, 90px, 0); animation: glitch 3s infinite linear alternate-reverse; }
-        @keyframes glitch { 0% { clip: rect(10px, 9999px, 30px, 0); } 100% { clip: rect(80px, 9999px, 100px, 0); } }
+        .gate-icon { font-size: 3rem; margin-bottom: 20px; color: var(--success); animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(1); opacity: 0.8; } }
 
     </style>
 </head>
@@ -145,58 +170,91 @@
 
     <div class="bg-mesh"></div>
 
-    <!-- 1. الشاشة الرئيسية (Auto Identity) -->
+    <!-- 1. الشاشة الرئيسية -->
     <div class="app-view active" id="v-home">
-        <div style="margin: auto; width: 100%; text-align: center;">
-            <div class="mystery-badge" id="my-badge" style="background: #333; color: #fff;">?</div>
-            
-            <h1 class="glitch-text" data-text="مجهول">مجهول</h1>
-            <p id="id-text">جاري تعيين هويتك المشفرة...</p>
+        <div class="home-container">
+            <div class="mystery-badge" id="my-badge">?</div>
+            <h1 style="margin-bottom: 5px;">GhostVoice</h1>
+            <p style="color: var(--text-gray); margin-bottom: 30px;">تحدث بحرية، بلا أسماء، بلا أثر.</p>
 
-            <button class="btn-ghost" onclick="createRoom()">
-                <span>إنشاء غرفة سرية</span> <i class="fas fa-plus"></i>
-            </button>
-            <button class="btn-ghost" onclick="document.getElementById('join-inp').focus()">
-                <span>انضمام برابط</span> <i class="fas fa-link"></i>
+            <div class="toggle-wrapper">
+                <span style="font-size: 0.9rem;">غرفة مقفلة (بموافقة الأدمن)</span>
+                <label class="switch">
+                    <input type="checkbox" id="private-toggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <button class="btn-main" onclick="createRoom()">
+                <span>إنشاء غرفة جديدة</span>
+                <i class="fas fa-fingerprint"></i>
             </button>
             
-            <!-- حقل مخفي للانضمام يظهر عند الحاجة -->
-            <input type="text" id="join-inp" style="background:transparent; border:none; color:transparent; height:1px;" onpaste="handlePaste(event)">
+            <p style="margin-top: 30px; font-size: 0.8rem; opacity: 0.5;">
+                * للانضمام لغرفة، استخدم الرابط الذي يرسله صديقك.
+            </p>
         </div>
     </div>
 
-    <!-- 2. الغرفة -->
+    <!-- 2. شاشة الانتظار (للغرف المقفلة) -->
+    <div class="app-view" id="v-waiting">
+        <div class="waiting-screen">
+            <i class="fas fa-lock" style="font-size: 3rem; margin-bottom: 20px; color: var(--text-gray);"></i>
+            <h2>الغرفة مقفلة</h2>
+            <p style="color: var(--text-gray); margin-top: 10px;">تم إرسال طلب انضمام إلى مالك الغرفة.<br>يرجى الانتظار...</p>
+            <div class="mystery-badge" style="width: 60px; height: 60px; font-size: 1.5rem; margin-top: 30px; border-color: transparent; animation: spin 2s linear infinite;">
+                <i class="fas fa-circle-notch"></i>
+            </div>
+            <button class="btn-main" onclick="location.reload()" style="background: transparent; border: 1px solid #333; color: white; margin-top: 40px; width: auto; padding: 10px 30px;">
+                إلغاء
+            </button>
+        </div>
+    </div>
+
+    <!-- 3. الغرفة -->
     <div class="app-view" id="v-room">
-        <div style="padding: 20px; display: flex; justify-content: space-between; align-items: center;">
-            <div style="font-family: monospace; opacity: 0.6;"><i class="fas fa-circle" style="color:red; font-size:10px;"></i> LIVE</div>
-            <div style="font-family: monospace; letter-spacing: 2px;" id="room-code">CODE</div>
+        <!-- قائمة طلبات الانضمام (للأدمن فقط) -->
+        <div class="requests-list" id="requests-list"></div>
+
+        <div class="room-header">
+            <div style="font-size: 0.9rem; font-weight: bold;">
+                <span id="room-status-icon" style="color: var(--success); margin-left: 5px;">●</span> مباشر
+            </div>
+            <button onclick="copyLink()" style="background: rgba(255,255,255,0.1); border: none; color: white; padding: 5px 10px; border-radius: 8px; font-size: 0.8rem;">
+                <i class="fas fa-link"></i> نسخ الرابط
+            </button>
         </div>
 
         <div class="grid-container" id="grid">
-            <!-- المستخدمون هنا -->
+            <!-- المستخدمون -->
         </div>
 
         <div class="dock">
             <button class="dock-btn danger" onclick="leaveRoom()"><i class="fas fa-phone-slash"></i></button>
             <button class="dock-btn active" id="mic-btn" onclick="toggleMic()"><i class="fas fa-microphone"></i></button>
-            <button class="dock-btn" onclick="copyLink()"><i class="fas fa-share-alt"></i></button>
         </div>
+        
+        <!-- عنصر مخفي لتجميع الأصوات -->
+        <div id="audio-streams" style="display:none;"></div>
     </div>
 
-    <!-- 3. بوابة الصوت (إلزامي للمتصفح) -->
+    <!-- 4. بوابة إذن الصوت -->
     <div class="audio-gate" id="audio-gate">
-        <i class="fas fa-fingerprint" style="font-size: 4rem; color: rgba(255,255,255,0.2); margin-bottom: 20px;"></i>
-        <h2 style="color: white; margin-bottom: 10px;">إذن الصوت</h2>
-        <p>مطلوب السماح بالصوت للدخول بوضع التخفي</p>
-        <button class="btn-ghost" onclick="confirmEntry()" style="background: white; color: black; border: none;">
-            دخول الآن
+        <i class="fas fa-headset gate-icon"></i>
+        <h2>مطلوب إذن الصوت</h2>
+        <p style="color: #aaa; margin: 15px 0; max-width: 300px; line-height: 1.6;">
+            لضمان تشفير المكالمة، يحتاج المتصفح لموافقتك لاستخدام المايكروفون والسماعات.
+        </p>
+        <button class="btn-main" onclick="confirmAudioEntry()" style="max-width: 200px;">
+            موافق والدخول
         </button>
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-        import { getDatabase, ref, set, onValue, update, remove, onDisconnect } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue, update, remove, push, onDisconnect, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
+        // إعدادات فايربيس
         const firebaseConfig = {
             apiKey: "AIzaSyAjE-2q6PONBkCin9ZN22gDp9Q8pAH9ZW8",
             authDomain: "story-97cf7.firebaseapp.com",
@@ -209,139 +267,330 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // --- نظام الهوية التلقائي (Anonymous System) ---
-        let user = JSON.parse(localStorage.getItem('ghost_user')) || null;
+        // --- المتغيرات العامة ---
+        let user = JSON.parse(localStorage.getItem('ghost_user')) || generateIdentity();
+        localStorage.setItem('ghost_user', JSON.stringify(user));
+        
         let activeRoom = null;
         let localStream = null;
-        let audioCtx = null;
-        let analyser = null;
+        let peer = null; // كائن PeerJS للاتصال الصوتي
+        let myPeerId = null;
         let isMuted = false;
+        let isOwner = false;
+        let audioContext, analyser; // لتحليل الصوت (Visualizer)
+        const connectedPeers = {}; // لتتبع الاتصالات
 
-        function generateIdentity() {
-            // توليد حرف إنجليزي عشوائي
-            const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            const char = letters.charAt(Math.floor(Math.random() * letters.length));
-            
-            // توليد لون عشوائي ساطع (Neon-ish)
-            const hue = Math.floor(Math.random() * 360);
-            const color = `hsl(${hue}, 80%, 60%)`;
-
-            return {
-                id: 'ghost_' + Date.now() + Math.random().toString(36).substr(2, 5),
-                letter: char,
-                color: color
-            };
-        }
-
-        // عند فتح التطبيق
-        if (!user) {
-            user = generateIdentity();
-            localStorage.setItem('ghost_user', JSON.stringify(user));
-        }
-        
-        // عرض الهوية في الصفحة الرئيسية
+        // عرض الهوية
         document.getElementById('my-badge').innerText = user.letter;
         document.getElementById('my-badge').style.backgroundColor = user.color;
         document.getElementById('my-badge').style.boxShadow = `0 0 30px ${user.color}`;
-        document.getElementById('id-text').innerHTML = `هويتك الحالية: <span style="color:${user.color}; font-weight:bold; font-family:monospace;">المجهول ${user.letter}</span>`;
 
-        // التحقق من وجود رابط غرفة
+        // التحقق من الرابط عند الفتح
         const params = new URLSearchParams(location.search);
-        if (params.get('room')) {
-            activeRoom = params.get('room');
+        const roomFromUrl = params.get('room');
+
+        if (roomFromUrl) {
+            activeRoom = roomFromUrl;
+            document.getElementById('v-home').classList.remove('active');
+            // إظهار بوابة الصوت مباشرة عند الدخول برابط
             document.getElementById('audio-gate').classList.add('show');
         }
 
-        // --- الوظائف ---
-        
-        window.createRoom = () => {
-            activeRoom = Date.now().toString(36);
+        // --- الوظائف الأساسية ---
+
+        function generateIdentity() {
+            const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const char = letters.charAt(Math.floor(Math.random() * letters.length));
+            const hue = Math.floor(Math.random() * 360);
+            return {
+                id: 'u_' + Date.now() + Math.random().toString(36).substr(2, 4),
+                letter: char,
+                color: `hsl(${hue}, 70%, 55%)`
+            };
+        }
+
+        window.createRoom = async () => {
+            activeRoom = Date.now().toString(36) + Math.random().toString(36).substr(2, 3);
+            const isPrivate = document.getElementById('private-toggle').checked;
+            
+            // حفظ إعدادات الغرفة
+            await set(ref(db, `rooms/${activeRoom}/config`), {
+                owner: user.id,
+                private: isPrivate,
+                created: Date.now()
+            });
+
+            isOwner = true;
+            // الانتقال لبوابة الصوت لتفعيل المايك قبل الدخول
+            document.getElementById('v-home').classList.remove('active');
             document.getElementById('audio-gate').classList.add('show');
         };
 
-        window.handlePaste = (e) => {
-            const pasted = (e.clipboardData || window.clipboardData).getData('text');
-            if(pasted.includes('room=')) {
-                const url = new URL(pasted);
-                activeRoom = url.searchParams.get('room');
-                document.getElementById('audio-gate').classList.add('show');
-            }
-        };
-
-        window.confirmEntry = async () => {
+        window.confirmAudioEntry = async () => {
             try {
-                // تفعيل الصوت في المتصفح
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                await audioCtx.resume();
+                // 1. طلب المايكروفون
+                localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
                 
-                // طلب المايك
-                localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                
-                // إخفاء البوابة والانتقال للغرفة
-                document.getElementById('audio-gate').classList.remove('show');
-                showView('v-room');
-                document.getElementById('room-code').innerText = activeRoom.substring(0,6).toUpperCase();
+                // 2. إعداد PeerJS (نظام الاتصال الصوتي)
+                setupPeerConnection();
 
-                // بدء الاتصال بالخادم
-                joinFirebaseRoom();
-                initVisualizer(localStream);
+                document.getElementById('audio-gate').classList.remove('show');
 
             } catch (err) {
-                alert("يجب السماح بالمايكروفون للتحدث!");
+                alert("لا يمكن الدخول بدون سماح للمايكروفون. يرجى تفعيله من إعدادات المتصفح.");
+                console.error(err);
             }
         };
 
-        function showView(id) {
-            document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
+        function setupPeerConnection() {
+            // إنشاء هوية PeerJS خاصة بالمستخدم
+            peer = new Peer(user.id);
+
+            peer.on('open', (id) => {
+                myPeerId = id;
+                checkRoomAccessAndJoin();
+            });
+
+            // استقبال المكالمات من الآخرين
+            peer.on('call', (call) => {
+                call.answer(localStream); // الرد وإرسال صوتي لهم
+                
+                call.on('stream', (remoteStream) => {
+                    playAudioStream(remoteStream, call.peer);
+                });
+            });
+            
+            peer.on('error', (err) => console.log('Peer error:', err));
         }
 
-        // --- منطق الخادم (Firebase) ---
-        function joinFirebaseRoom() {
-            const pRef = ref(db, `rooms/${activeRoom}/users/${user.id}`);
-            
-            // إضافة المستخدم ببياناته البسيطة (اللون والحرف فقط)
-            set(pRef, {
+        async function checkRoomAccessAndJoin() {
+            // قراءة إعدادات الغرفة
+            const configSnap = await get(ref(db, `rooms/${activeRoom}/config`));
+            const config = configSnap.val();
+
+            if (!config) {
+                alert("الغرفة غير موجودة أو انتهت.");
+                location.href = "/";
+                return;
+            }
+
+            // إذا كنت المالك أو الغرفة عامة -> ادخل فوراً
+            if (config.owner === user.id || !config.private) {
+                enterRoomLogic();
+            } else {
+                // الغرفة خاصة وأنا لست المالك -> اذهب لغرفة الانتظار
+                requestJoinAccess();
+            }
+        }
+
+        // --- منطق الغرفة الخاصة ---
+        function requestJoinAccess() {
+            showView('v-waiting');
+            const waitRef = ref(db, `rooms/${activeRoom}/waiting/${user.id}`);
+            set(waitRef, {
                 letter: user.letter,
                 color: user.color,
-                muted: false
+                timestamp: Date.now()
             });
-            onDisconnect(pRef).remove();
+            onDisconnect(waitRef).remove();
 
-            // الاستماع للتغييرات
+            // الاستماع لحالة القبول
+            onValue(ref(db, `rooms/${activeRoom}/allowed/${user.id}`), (snap) => {
+                if (snap.exists()) {
+                    // تمت الموافقة!
+                    remove(waitRef); // حذف من الانتظار
+                    enterRoomLogic();
+                }
+            });
+        }
+
+        // --- منطق الدخول للغرفة (بعد الموافقة أو إذا كانت عامة) ---
+        function enterRoomLogic() {
+            showView('v-room');
+            
+            // إضافة المستخدم للقائمة النشطة
+            const userRef = ref(db, `rooms/${activeRoom}/users/${user.id}`);
+            set(userRef, {
+                letter: user.letter,
+                color: user.color,
+                muted: false,
+                peerId: myPeerId // مهم جداً للاتصال
+            });
+            onDisconnect(userRef).remove();
+
+            // 1. مراقبة المستخدمين لعرضهم في الشبكة + الاتصال بهم
             onValue(ref(db, `rooms/${activeRoom}/users`), (snap) => {
                 const users = snap.val() || {};
                 renderGrid(users);
+                connectToNewUsers(users); // الاتصال الصوتي
+            });
+
+            // 2. إذا كنت المالك، راقب قائمة الانتظار
+            checkOwnerPrivileges();
+
+            // 3. تشغيل الـ Visualizer المحلي
+            initLocalVisualizer();
+        }
+
+        // --- الاتصال الصوتي (Mesh Network) ---
+        function connectToNewUsers(usersList) {
+            Object.keys(usersList).forEach(remoteUserId => {
+                if (remoteUserId === user.id) return; // لا تتصل بنفسك
+
+                const remoteUser = usersList[remoteUserId];
+                // إذا لم نكن متصلين به بالفعل ولديه PeerID
+                if (!connectedPeers[remoteUserId] && remoteUser.peerId) {
+                    console.log("Calling user:", remoteUserId);
+                    const call = peer.call(remoteUser.peerId, localStream);
+                    
+                    call.on('stream', (remoteStream) => {
+                        playAudioStream(remoteStream, remoteUserId);
+                    });
+
+                    connectedPeers[remoteUserId] = call;
+                }
             });
         }
 
+        function playAudioStream(stream, id) {
+            // التأكد من عدم تكرار الصوت
+            if (document.getElementById(`audio-${id}`)) return;
+
+            const audio = document.createElement('audio');
+            audio.id = `audio-${id}`;
+            audio.srcObject = stream;
+            audio.autoplay = true;
+            audio.playsInline = true; // مهم للموبايل
+            document.getElementById('audio-streams').appendChild(audio);
+
+            // تشغيل Visualizer للصوت القادم (اختياري لتحريك الفقاعة)
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const source = audioCtx.createMediaStreamSource(stream);
+            const analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 32;
+            source.connect(analyser);
+            const data = new Uint8Array(analyser.frequencyBinCount);
+            
+            const loop = () => {
+                if (!document.getElementById(`u-${id}`)) return;
+                analyser.getByteFrequencyData(data);
+                const vol = data.reduce((a,b)=>a+b) / data.length;
+                updateBlobVisual(id, vol);
+                requestAnimationFrame(loop);
+            };
+            loop();
+        }
+
+        // --- واجهة المستخدم ---
         function renderGrid(users) {
             const grid = document.getElementById('grid');
-            grid.innerHTML = '';
+            // نحتفظ بالعناصر الموجودة لعدم إعادة الرسم المزعج
+            const existingIds = Array.from(grid.children).map(c => c.id.replace('u-', ''));
+            
+            // حذف من خرجوا
+            existingIds.forEach(eid => {
+                if (!users[eid]) document.getElementById(`u-${eid}`).remove();
+            });
 
+            // إضافة أو تحديث الموجودين
             Object.keys(users).forEach(uid => {
                 const u = users[uid];
+                let el = document.getElementById(`u-${uid}`);
+                
+                if (!el) {
+                    el = document.createElement('div');
+                    el.className = 'user-blob';
+                    el.id = `u-${uid}`;
+                    grid.appendChild(el);
+                }
+
                 const isMe = uid === user.id;
+                const micIcon = u.muted ? '<i class="fas fa-microphone-slash" style="color:#ff4757"></i>' : '';
                 
-                const div = document.createElement('div');
-                div.className = 'user-blob';
-                div.id = `u-${uid}`;
-                
-                div.innerHTML = `
-                    <div class="blob-avatar" style="background: ${u.color}; box-shadow: 0 0 15px ${u.color}">
+                el.innerHTML = `
+                    <div class="blob-avatar" style="background: ${u.color}; box-shadow: 0 0 10px ${u.color}">
                         ${u.letter}
                     </div>
-                    <div class="blob-name">${isMe ? 'أنت' : 'مجهول'}</div>
-                    <div class="mic-icon">
-                        ${u.muted ? '<i class="fas fa-microphone-slash" style="color:#ff4757"></i>' : '<i class="fas fa-microphone"></i>'}
-                    </div>
+                    <div style="font-size:0.8rem; opacity:0.7;">${isMe ? 'أنت' : 'مجهول'}</div>
+                    <div style="position:absolute; top:10px; right:10px; font-size:0.8rem;">${micIcon}</div>
                 `;
-                
-                grid.appendChild(div);
             });
         }
 
-        // --- الصوت والتحكم ---
+        function updateBlobVisual(uid, vol) {
+            const blob = document.getElementById(`u-${uid}`);
+            if (blob && vol > 10) {
+                blob.classList.add('speaking');
+                blob.style.transform = `scale(${1 + vol/200})`;
+            } else if (blob) {
+                blob.classList.remove('speaking');
+                blob.style.transform = `scale(1)`;
+            }
+        }
+
+        function initLocalVisualizer() {
+            if(!localStream) return;
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const src = audioContext.createMediaStreamSource(localStream);
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 32;
+            src.connect(analyser);
+            const data = new Uint8Array(analyser.frequencyBinCount);
+            
+            const loop = () => {
+                analyser.getByteFrequencyData(data);
+                const vol = isMuted ? 0 : (data.reduce((a,b)=>a+b) / data.length);
+                updateBlobVisual(user.id, vol);
+                requestAnimationFrame(loop);
+            };
+            loop();
+        }
+
+        // --- أدوات الأدمن (الموافقة والرفض) ---
+        async function checkOwnerPrivileges() {
+            const configSnap = await get(ref(db, `rooms/${activeRoom}/config`));
+            if (configSnap.exists() && configSnap.val().owner === user.id) {
+                isOwner = true;
+                // مراقبة قائمة الانتظار
+                onValue(ref(db, `rooms/${activeRoom}/waiting`), (snap) => {
+                    renderRequests(snap.val() || {});
+                });
+            }
+        }
+
+        function renderRequests(requests) {
+            const list = document.getElementById('requests-list');
+            list.innerHTML = '';
+            
+            Object.keys(requests).forEach(reqId => {
+                const req = requests[reqId];
+                const item = document.createElement('div');
+                item.className = 'request-item';
+                item.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <div class="blob-avatar" style="width:30px; height:30px; font-size:1rem; background:${req.color}">${req.letter}</div>
+                        <span>يريد الانضمام</span>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <button onclick="approveUser('${reqId}')" style="background:#2ed573; border:none; width:30px; height:30px; border-radius:50%; color:white;"><i class="fas fa-check"></i></button>
+                        <button onclick="rejectUser('${reqId}')" style="background:#ff4757; border:none; width:30px; height:30px; border-radius:50%; color:white;"><i class="fas fa-times"></i></button>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        window.approveUser = (reqId) => {
+            // نقل من الانتظار إلى السماح
+            set(ref(db, `rooms/${activeRoom}/allowed/${reqId}`), true);
+            remove(ref(db, `rooms/${activeRoom}/waiting/${reqId}`));
+        };
+
+        window.rejectUser = (reqId) => {
+            remove(ref(db, `rooms/${activeRoom}/waiting/${reqId}`));
+        };
+
+        // --- أدوات التحكم ---
         window.toggleMic = () => {
             isMuted = !isMuted;
             if(localStream) localStream.getAudioTracks()[0].enabled = !isMuted;
@@ -350,52 +599,26 @@
             btn.classList.toggle('active');
             btn.classList.toggle('danger');
             btn.innerHTML = isMuted ? '<i class="fas fa-microphone-slash"></i>' : '<i class="fas fa-microphone"></i>';
-
-            // تحديث الحالة في قاعدة البيانات
+            
             update(ref(db, `rooms/${activeRoom}/users/${user.id}`), { muted: isMuted });
-        };
-
-        window.leaveRoom = () => {
-            if(localStream) localStream.getTracks().forEach(t=>t.stop());
-            if(activeRoom) remove(ref(db, `rooms/${activeRoom}/users/${user.id}`));
-            location.href = location.origin + location.pathname;
         };
 
         window.copyLink = () => {
             const url = `${location.origin}${location.pathname}?room=${activeRoom}`;
             navigator.clipboard.writeText(url);
-            const btn = event.currentTarget;
-            const original = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-check"></i>';
-            setTimeout(() => btn.innerHTML = original, 1500);
+            alert("تم نسخ رابط الغرفة!");
         };
 
-        // --- مؤثرات بصرية للصوت ---
-        function initVisualizer(stream) {
-            if(!audioCtx) return;
-            const src = audioCtx.createMediaStreamSource(stream);
-            analyser = audioCtx.createAnalyser();
-            analyser.fftSize = 32;
-            src.connect(analyser);
-            
-            const data = new Uint8Array(analyser.frequencyBinCount);
-            
-            const loop = () => {
-                if(!document.getElementById('v-room').classList.contains('active')) return;
-                analyser.getByteFrequencyData(data);
-                const vol = data.reduce((a,b)=>a+b) / data.length;
-                
-                const myBlob = document.getElementById(`u-${user.id}`);
-                if(myBlob && !isMuted && vol > 10) {
-                    myBlob.classList.add('speaking');
-                    myBlob.style.transform = `scale(${1 + vol/200})`;
-                } else if (myBlob) {
-                    myBlob.classList.remove('speaking');
-                    myBlob.style.transform = `scale(1)`;
-                }
-                requestAnimationFrame(loop);
-            };
-            loop();
+        window.leaveRoom = () => {
+            if(localStream) localStream.getTracks().forEach(t => t.stop());
+            if(activeRoom) remove(ref(db, `rooms/${activeRoom}/users/${user.id}`));
+            if(peer) peer.destroy();
+            location.href = "/";
+        };
+
+        function showView(id) {
+            document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
         }
 
     </script>
