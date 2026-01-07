@@ -3,46 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
-    <title>TAQWA – تقوى | القرآن الكريم، أذكار، ومصحف معلم</title>
-    <meta name="description" content="منصة تقوى TAQWA: رفيقك المسلم اليومي. استمع للقرآن الكريم بأصوات أشهر القراء، اقرأ الأذكار، والمصحف المعلم للأطفال. تطبيق إسلامي شامل ومجاني يعمل بدون إنترنت جزئياً.">
-    <meta name="keywords" content="تقوى, TAQWA, قرآن, القرآن الكريم, أذكار, أدعية, استماع قرآن, تطبيق إسلامي, مواقيت الصلاة, تسبيح, المصحف المعلم, تلاوات خاشعة, إسلام ويب, mp3 quran">
+    <title>TAQWA – تقوى</title>
+    <meta name="description" content="منصة تقوى TAQWA: القرآن الكريم، أذكار، ومصحف معلم.">
+    <meta name="keywords" content="تقوى, TAQWA, قرآن, أذكار">
     <meta name="author" content="TAQWA">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://your-website-url.com">
-
-    <meta property="og:title" content="TAQWA – تقوى | تطبيقك الإسلامي الشامل">
-    <meta property="og:description" content="استمع للقرآن، ردد الأذكار، واستخدم السبحة الإلكترونية في منصة واحدة.">
-    <meta property="og:image" content="https://cdn-icons-png.flaticon.com/512/5350/5350172.png">
+    <meta name="theme-color" content="#1E4D40">
+    
+    <meta property="og:title" content="TAQWA – تقوى">
+    <meta property="og:description" content="القرآن الكريم والأذكار في تطبيق واحد.">
+    <meta property="og:image" content="https://i.postimg.cc/QNw8srJx/download-(72).jpg">
     <meta property="og:url" content="https://your-website-url.com">
     <meta property="og:type" content="website">
 
-    <meta name="theme-color" content="#1E4D40">
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/5350/5350172.png" type="image/png">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/5350/5350172.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/5350/5350172.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "TAQWA – تقوى",
-      "url": "https://your-website-url.com",
-      "description": "تطبيق إسلامي شامل للقرآن والأذكار.",
-      "applicationCategory": "ReligiousApplication",
-      "operatingSystem": "All",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      }
-    }
-    </script>
 
     <style>
         :root { --primary: #0f2e26; --gold: #C5A059; --white: #ffffff; --bg-body: #f8f9fa; }
@@ -53,8 +33,6 @@
             color: #333; height: 100vh; display: flex; flex-direction: column; overflow: hidden;
         }
         
-        h1 { display: none; } 
-
         #splash {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--primary); z-index: 9999;
@@ -63,7 +41,6 @@
         }
         .splash-logo { width: 100px; height: 100px; border-radius: 20px; background: var(--gold); display: flex; justify-content: center; align-items: center; margin-bottom: 20px; box-shadow: 0 0 30px rgba(197, 160, 89, 0.4); }
         .splash-text { font-size: 2.5rem; color: white; font-weight: 900; letter-spacing: 1px; }
-        .splash-sub { color: rgba(255,255,255,0.7); margin-top: 5px; font-size: 1.2rem; }
 
         .app-container { display: flex; height: 100%; position: relative; }
         .sidebar {
@@ -74,14 +51,9 @@
         .nav-btn {
             width: 50px; height: 50px; margin: 10px 0; border-radius: 16px;
             display: flex; justify-content: center; align-items: center;
-            font-size: 1.4rem; color: #ccc; cursor: pointer; transition: 0.3s; position: relative;
+            font-size: 1.4rem; color: #ccc; cursor: pointer; transition: 0.3s;
         }
         .nav-btn.active { background: var(--primary); color: var(--gold); transform: scale(1.1); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-        .nav-btn .tooltip {
-            position: absolute; right: 60px; background: #333; color: white; padding: 5px 10px;
-            border-radius: 5px; font-size: 0.8rem; display: none; white-space: nowrap;
-        }
-        .nav-btn:hover .tooltip { display: block; }
         
         .content-area { flex: 1; padding: 20px; padding-bottom: 150px; overflow-y: auto; }
         .section { display: none; animation: fadeIn 0.4s ease; }
@@ -129,13 +101,13 @@
         
         #kaaba-icon {
             position: fixed; bottom: 100px; right: 20px; width: 60px; height: 60px; 
-            background: var(--primary); border-radius: 18px; display: none; z-index: 999;
+            background: var(--white); border-radius: 18px; display: none; z-index: 999;
             justify-content: center; align-items: center; box-shadow: 0 5px 25px rgba(0,0,0,0.3);
-            cursor: pointer; border: 2px solid var(--gold); animation: float 3s ease-in-out infinite;
+            cursor: pointer; border: 2px solid var(--gold);
         }
-        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+        #kaaba-icon img { width: 40px; height: 40px; object-fit: contain; }
 
-        .tasbih-container { display: flex; flex-direction: column; align-items: center; height: 70vh; justify-content: center; }
+        .tasbih-container { display: flex; flex-direction: column; align-items: center; height: 65vh; justify-content: center; }
         .tasbih-circle {
             width: 260px; height: 260px; border-radius: 50%; background: white;
             border: 10px solid var(--primary); display: flex; flex-direction: column;
@@ -144,7 +116,19 @@
             transition: 0.1s;
         }
         .tasbih-circle:active { transform: scale(0.95); border-color: var(--gold); }
+        .tasbih-controls {
+            display: flex; gap: 10px; width: 100%; overflow-x: auto; padding: 10px 0; margin-bottom: 10px;
+        }
+        .tasbih-cat {
+            border: 1px solid #ddd; background: white; padding: 8px 15px; border-radius: 20px; white-space: nowrap; cursor: pointer; font-size: 0.9rem;
+        }
+        .tasbih-cat.active { background: var(--primary); color: white; border-color: var(--primary); }
         
+        .target-select {
+            margin-bottom: 20px; padding: 8px 15px; border-radius: 15px; border: 1px solid #ddd; 
+            font-family: 'Tajawal'; font-size: 1rem; width: 100%; max-width: 200px; text-align: center;
+        }
+
         #install-app-btn {
             background: var(--gold); color: var(--primary); border: none; padding: 10px 20px;
             border-radius: 10px; font-weight: bold; margin-bottom: 20px; cursor: pointer;
@@ -168,50 +152,35 @@
     <div id="splash">
         <div class="splash-logo"><i class="fas fa-kaaba fa-3x" style="color:var(--primary)"></i></div>
         <div class="splash-text">TAQWA</div>
-        <div class="splash-sub">تــقــوى</div>
     </div>
 
     <div class="app-container">
         <nav class="sidebar">
-            <div class="nav-btn active" onclick="switchTab('reciters')">
-                <i class="fas fa-users"></i>
-            </div>
-            <div class="nav-btn" onclick="switchTab('kids')">
-                <i class="fas fa-child"></i>
-            </div>
-            <div class="nav-btn" onclick="switchTab('quran')">
-                <i class="fas fa-book-open"></i>
-            </div>
-            <div class="nav-btn" onclick="switchTab('tasbih')">
-                <i class="fas fa-fingerprint"></i>
-            </div>
-            <div class="nav-btn" onclick="shareApp()">
-                <i class="fas fa-share-alt"></i>
-            </div>
+            <div class="nav-btn active" onclick="switchTab('reciters')"><i class="fas fa-users"></i></div>
+            <div class="nav-btn" onclick="switchTab('kids')"><i class="fas fa-child"></i></div>
+            <div class="nav-btn" onclick="switchTab('quran')"><i class="fas fa-book-open"></i></div>
+            <div class="nav-btn" onclick="switchTab('tasbih')"><i class="fas fa-fingerprint"></i></div>
+            <div class="nav-btn" onclick="shareApp()"><i class="fas fa-share-alt"></i></div>
         </nav>
 
         <main class="content-area">
-            
             <button id="install-app-btn" onclick="installPWA()">
                 <i class="fas fa-download"></i> تثبيت تطبيق تقوى
             </button>
 
             <header class="brand-header">
                 <div class="brand-title">TAQWA <span>تقوى</span></div>
-                <i class="fas fa-cog" style="color:#ccc; cursor:not-allowed"></i>
             </header>
 
             <section id="reciters" class="section active">
-                <h1 style="font-size:1.2rem; margin-bottom:15px; color:#666;">اختر قارئك المفضل</h1>
-                <input type="text" class="search-bar" placeholder="ابحث عن قارئ (مثل: العفاسي)..." onkeyup="filterReciters(this.value)">
+                <input type="text" class="search-bar" placeholder="ابحث عن قارئ..." onkeyup="filterReciters(this.value)">
                 <div class="reciters-grid" id="recitersList"></div>
             </section>
 
             <section id="kids" class="section">
-                <div style="background:linear-gradient(45deg, #FF9F43, #ff6b6b); color:white; padding:25px; border-radius:20px; margin-bottom:20px; text-align:center; box-shadow: 0 10px 20px rgba(255, 159, 67, 0.3);">
+                <div style="background:linear-gradient(45deg, #FF9F43, #ff6b6b); color:white; padding:25px; border-radius:20px; margin-bottom:20px; text-align:center;">
                     <i class="fas fa-star fa-2x" style="margin-bottom:10px;"></i>
                     <h3>المصحف المعلم</h3>
-                    <p style="opacity:0.9">الشيخ الحصري (ترديد الأطفال)</p>
                 </div>
                 <div class="reciters-grid" id="kidsList"></div>
             </section>
@@ -220,25 +189,35 @@
                 <div style="text-align:center; padding-top:30px;">
                     <i class="fas fa-quran fa-4x" style="color:var(--primary); margin-bottom:20px;"></i>
                     <h3>المصحف الشريف</h3>
-                    <p style="color:#888; margin-bottom:20px;">اقرأ القرآن الكريم كاملاً بخط واضح</p>
                     <select id="readerSelect" style="width:100%; padding:15px; margin:10px 0; border-radius:12px; border:1px solid #ddd; background:#fff; font-family:'Tajawal'"></select>
-                    <button onclick="openReader()" style="width:100%; padding:15px; background:var(--primary); color:white; border:none; border-radius:12px; font-weight:bold; font-size:1rem; cursor:pointer;">قراءة السورة</button>
+                    <button onclick="openReader()" style="width:100%; padding:15px; background:var(--primary); color:white; border:none; border-radius:12px; font-weight:bold; cursor:pointer;">قراءة السورة</button>
                 </div>
             </section>
 
             <section id="tasbih" class="section">
-                <div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:10px; margin-bottom:10px;">
-                    <button class="tasbih-cat active" style="border:none; background:var(--primary); color:white; padding:8px 20px; border-radius:20px; white-space:nowrap" onclick="setTasbih(this, 'سبحان الله')">سبحان الله</button>
-                    <button class="tasbih-cat" style="border:1px solid #ddd; background:white; padding:8px 20px; border-radius:20px; white-space:nowrap" onclick="setTasbih(this, 'الحمد لله')">الحمد لله</button>
-                    <button class="tasbih-cat" style="border:1px solid #ddd; background:white; padding:8px 20px; border-radius:20px; white-space:nowrap" onclick="setTasbih(this, 'أستغفر الله')">أستغفر الله</button>
+                <div class="tasbih-controls">
+                    <button class="tasbih-cat active" onclick="setTasbih(this, 'سبحان الله')">سبحان الله</button>
+                    <button class="tasbih-cat" onclick="setTasbih(this, 'الحمد لله')">الحمد لله</button>
+                    <button class="tasbih-cat" onclick="setTasbih(this, 'الله أكبر')">الله أكبر</button>
+                    <button class="tasbih-cat" onclick="setTasbih(this, 'أستغفر الله')">أستغفر الله</button>
+                    <button class="tasbih-cat" onclick="setTasbih(this, 'لا حول ولا قوة إلا بالله')">لا حول ولا قوة إلا بالله</button>
+                    <button class="tasbih-cat" onclick="setTasbih(this, 'اللهم صل وسلم على نبينا محمد')">الصلاة على النبي</button>
                 </div>
+                
                 <div class="tasbih-container">
+                    <select id="tasbihTarget" class="target-select" onchange="setTarget(this.value)">
+                        <option value="0">العدد: مفتوح</option>
+                        <option value="33" selected>العدد: 33</option>
+                        <option value="100">العدد: 100</option>
+                        <option value="1000">العدد: 1000</option>
+                    </select>
+
                     <div class="tasbih-circle" onclick="doTasbih()">
-                        <div style="position:absolute; top:30px; color:#999; font-size:0.9rem;">العدد</div>
+                        <div style="position:absolute; top:40px; color:#999; font-size:0.9rem;">العدد الحالي</div>
                         <span id="tasbihVal" style="font-size:4rem; font-weight:bold; color:var(--primary);">0</span>
-                        <span id="currentDhikr" style="font-size:1.1rem; color:var(--gold); margin-top:5px; font-weight:bold;">سبحان الله</span>
+                        <span id="currentDhikr" style="font-size:1rem; color:var(--gold); margin-top:5px; font-weight:bold; text-align:center; padding:0 10px;">سبحان الله</span>
                     </div>
-                    <button onclick="resetTasbih()" style="margin-top:30px; background:transparent; border:2px solid #eee; color:#666; padding:8px 30px; border-radius:20px; cursor:pointer;">تصفير العداد</button>
+                    <button onclick="resetTasbih()" style="margin-top:30px; background:transparent; border:2px solid #eee; color:#666; padding:8px 30px; border-radius:20px; cursor:pointer;">تصفير</button>
                 </div>
             </section>
         </main>
@@ -264,7 +243,7 @@
     </div>
 
     <div id="kaaba-icon" onclick="maximizePlayer()">
-        <i class="fas fa-compact-disc fa-spin" style="color:var(--gold); font-size:2rem; animation-duration: 3s;"></i>
+        <img src="https://cdn-icons-png.flaticon.com/512/5350/5350172.png" alt="Taqa">
     </div>
 
     <div id="playlistModal" style="position:fixed; bottom:0; left:0; width:100%; height:75vh; background:white; z-index:1000; border-radius:25px 25px 0 0; box-shadow:0 -10px 50px rgba(0,0,0,0.2); transform:translateY(110%); transition:0.3s cubic-bezier(0.4, 0, 0.2, 1); display:flex; flex-direction:column;">
@@ -315,9 +294,7 @@
             renderKids();
 
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('sw.js')
-                .then(reg => console.log('SW Registered', reg))
-                .catch(err => console.log('SW Failed', err));
+                navigator.serviceWorker.register('sw.js');
             }
         };
 
@@ -325,8 +302,7 @@
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            const installBtn = document.getElementById('install-app-btn');
-            installBtn.style.display = 'flex';
+            document.getElementById('install-app-btn').style.display = 'flex';
         });
 
         async function installPWA() {
@@ -348,15 +324,10 @@
             };
 
             if (navigator.share) {
-                try {
-                    await navigator.share(shareData);
-                } catch (err) {
-                    console.log('Error sharing:', err);
-                }
+                try { await navigator.share(shareData); } catch (err) {}
             } else {
                 const msg = encodeURIComponent(shareData.text + " " + shareData.url);
-                const whatsapp = `https://wa.me/?text=${msg}`;
-                window.open(whatsapp, '_blank');
+                window.open(`https://wa.me/?text=${msg}`, '_blank');
             }
         }
 
@@ -367,7 +338,7 @@
                 allSurahs = data.data;
                 const select = document.getElementById('readerSelect');
                 allSurahs.forEach(s => select.innerHTML += `<option value="${s.number}">${s.number}. ${s.name}</option>`);
-            } catch(e) { console.error("Error fetching surahs"); }
+            } catch(e) {}
         }
 
         function renderReciters(filter = "") {
@@ -380,9 +351,7 @@
                 return bFav - aFav; 
             });
 
-            if(filter) {
-                sortedReciters = sortedReciters.filter(r => r.name.includes(filter));
-            }
+            if(filter) sortedReciters = sortedReciters.filter(r => r.name.includes(filter));
 
             sortedReciters.forEach(r => {
                 const isFav = favorites.includes(r.id);
@@ -438,13 +407,10 @@
 
             const surah = allSurahs[surahIndex];
             const numStr = String(surah.number).padStart(3, '0');
-            const url = `${server}${numStr}.mp3`;
-            
-            audio.src = url;
+            audio.src = `${server}${numStr}.mp3`;
             audio.play();
             
-            const player = document.getElementById('persistent-player');
-            player.style.display = 'flex';
+            document.getElementById('persistent-player').style.display = 'flex';
             document.getElementById('kaaba-icon').style.display = 'none';
             document.getElementById('p-title').innerText = surah.name;
             document.getElementById('p-reciter').innerText = reciterName;
@@ -454,7 +420,7 @@
                 navigator.mediaSession.metadata = new MediaMetadata({
                     title: surah.name,
                     artist: reciterName,
-                    album: 'TAQWA - تقوى',
+                    album: 'TAQWA',
                     artwork: [{ src: 'https://cdn-icons-png.flaticon.com/512/5350/5350172.png', sizes: '512x512', type: 'image/png' }]
                 });
                 navigator.mediaSession.setActionHandler('play', togglePlay);
@@ -475,7 +441,6 @@
         function toggleSurahMenu() {
             const modal = document.getElementById('playlistModal');
             const content = document.getElementById('playlistContent');
-            
             if(modal.style.transform === 'translateY(0%)') {
                 modal.style.transform = 'translateY(110%)';
             } else {
@@ -508,16 +473,34 @@
         }
 
         let tasbihCount = 0;
+        let tasbihGoal = 33;
+
         function setTasbih(el, dhikr) {
             document.querySelectorAll('.tasbih-cat').forEach(c => {
-                c.style.background = 'white'; c.style.color='#333';
+                c.classList.remove('active');
+                c.style.background = 'white'; 
+                c.style.color='#333';
             });
-            el.style.background = 'var(--primary)'; el.style.color = 'white';
+            el.classList.add('active');
+            el.style.background = 'var(--primary)'; 
+            el.style.color = 'white';
             document.getElementById('currentDhikr').innerText = dhikr;
             resetTasbih();
         }
 
+        function setTarget(val) {
+            tasbihGoal = parseInt(val);
+            resetTasbih();
+        }
+
         function doTasbih() {
+            if (tasbihGoal > 0 && tasbihCount >= tasbihGoal) {
+                if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
+                alert("تم بحمد الله إتمام العدد المطلوب!");
+                tasbihCount = 0;
+                document.getElementById('tasbihVal').innerText = 0;
+                return;
+            }
             tasbihCount++;
             document.getElementById('tasbihVal').innerText = tasbihCount;
             if(navigator.vibrate) navigator.vibrate(30);
@@ -533,20 +516,18 @@
             if(!num) return;
             document.getElementById('fullReader').style.display = 'flex';
             const txt = document.getElementById('readerText');
-            txt.innerHTML = '<div style="text-align:center; color:var(--primary)">جاري تحميل السورة...</div>';
+            txt.innerHTML = '<div style="text-align:center; color:var(--primary)">جاري التحميل...</div>';
             try {
                 const res = await fetch(`https://api.alquran.cloud/v1/surah/${num}/quran-uthmani`);
                 const data = await res.json();
                 let html = `<h2 style="color:var(--primary); margin-bottom:30px; text-align:center;">${data.data.name}</h2>`;
                 if(num!=1 && num!=9) html += `<div style="margin-bottom:20px; text-align:center;">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>`;
-                
                 let fullText = "";
                 data.data.ayahs.forEach(a => {
                     fullText += `${a.text} <span style="color:var(--gold); font-size:0.7em; font-family:'Tajawal'; border:1px solid #ddd; border-radius:50%; width:25px; height:25px; display:inline-flex; justify-content:center; align-items:center; margin:0 5px;">${a.numberInSurah.toLocaleString('ar-EG')}</span> `;
                 });
-                
                 txt.innerHTML = html + fullText;
-            } catch(e) { txt.innerHTML = "حدث خطأ في التحميل، تأكد من اتصالك بالإنترنت."; }
+            } catch(e) { txt.innerHTML = "حدث خطأ في التحميل"; }
         }
         function closeReader() { document.getElementById('fullReader').style.display = 'none'; }
 
