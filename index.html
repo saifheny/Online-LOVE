@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <!-- 1. هوية الموقع و SEO -->
     <title>TAQWA – تقوى | القرآن الكريم، أذكار، ومصحف معلم</title>
     <meta name="description" content="منصة تقوى TAQWA: رفيقك المسلم اليومي. استمع للقرآن الكريم بأصوات أشهر القراء، اقرأ الأذكار، والمصحف المعلم للأطفال. تطبيق إسلامي شامل ومجاني يعمل بدون إنترنت جزئياً.">
     <meta name="keywords" content="تقوى, TAQWA, قرآن, القرآن الكريم, أذكار, أدعية, استماع قرآن, تطبيق إسلامي, مواقيت الصلاة, تسبيح, المصحف المعلم, تلاوات خاشعة, إسلام ويب, mp3 quran">
@@ -12,26 +11,22 @@
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://your-website-url.com">
 
-    <!-- Open Graph for Social Media -->
     <meta property="og:title" content="TAQWA – تقوى | تطبيقك الإسلامي الشامل">
     <meta property="og:description" content="استمع للقرآن، ردد الأذكار، واستخدم السبحة الإلكترونية في منصة واحدة.">
     <meta property="og:image" content="https://cdn-icons-png.flaticon.com/512/5350/5350172.png">
     <meta property="og:url" content="https://your-website-url.com">
     <meta property="og:type" content="website">
 
-    <!-- PWA Settings -->
     <meta name="theme-color" content="#1E4D40">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon-192.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    <!-- Fonts & Icons -->
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/5350/5350172.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Schema Markup for Google -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -58,8 +53,7 @@
             color: #333; height: 100vh; display: flex; flex-direction: column; overflow: hidden;
         }
         
-        /* Typography H1 for SEO */
-        h1 { display: none; } /* Hidden visually but present for SEO structure if needed, or styled in header */
+        h1 { display: none; } 
 
         #splash {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -94,12 +88,10 @@
         .section.active { display: block; }
         @keyframes fadeIn { from{opacity:0; transform:translateY(15px);} to{opacity:1; transform:translateY(0);} }
 
-        /* Branding Header */
         .brand-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         .brand-title { font-size: 1.8rem; font-weight: 900; color: var(--primary); }
         .brand-title span { color: var(--gold); }
         
-        /* Search & Cards */
         .search-bar {
             width: 100%; padding: 15px; border-radius: 15px; border: 1px solid #eee;
             font-family: 'Tajawal'; font-size: 1rem; margin-bottom: 20px;
@@ -122,7 +114,6 @@
         .pin-icon { position: absolute; top: 10px; left: 10px; color: #eee; font-size: 1.1rem; z-index: 2; transition: 0.2s; }
         .pin-icon.active { color: var(--gold); }
 
-        /* Player */
         #persistent-player {
             position: fixed; bottom: 20px; left: 15px; right: 15px;
             background: linear-gradient(to right, #153e32, #0f2e26);
@@ -136,7 +127,6 @@
         .player-actions { position: absolute; top: -12px; left: 15px; display: flex; gap: 8px; }
         .mini-btn { width: 26px; height: 26px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 0.8rem; cursor: pointer; background: #eee; color: #333; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         
-        /* Fab & Modals */
         #kaaba-icon {
             position: fixed; bottom: 100px; right: 20px; width: 60px; height: 60px; 
             background: var(--primary); border-radius: 18px; display: none; z-index: 999;
@@ -145,7 +135,6 @@
         }
         @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
 
-        /* Tasbih */
         .tasbih-container { display: flex; flex-direction: column; align-items: center; height: 70vh; justify-content: center; }
         .tasbih-circle {
             width: 260px; height: 260px; border-radius: 50%; background: white;
@@ -156,7 +145,6 @@
         }
         .tasbih-circle:active { transform: scale(0.95); border-color: var(--gold); }
         
-        /* Install PWA Button */
         #install-app-btn {
             background: var(--gold); color: var(--primary); border: none; padding: 10px 20px;
             border-radius: 10px; font-weight: bold; margin-bottom: 20px; cursor: pointer;
@@ -177,7 +165,6 @@
 </head>
 <body>
     
-    <!-- Splash Screen -->
     <div id="splash">
         <div class="splash-logo"><i class="fas fa-kaaba fa-3x" style="color:var(--primary)"></i></div>
         <div class="splash-text">TAQWA</div>
@@ -185,7 +172,6 @@
     </div>
 
     <div class="app-container">
-        <!-- Sidebar Navigation -->
         <nav class="sidebar">
             <div class="nav-btn active" onclick="switchTab('reciters')">
                 <i class="fas fa-users"></i>
@@ -206,25 +192,21 @@
 
         <main class="content-area">
             
-            <!-- Install App Button (Shows only if supported) -->
             <button id="install-app-btn" onclick="installPWA()">
                 <i class="fas fa-download"></i> تثبيت تطبيق تقوى
             </button>
 
-            <!-- Header -->
             <header class="brand-header">
                 <div class="brand-title">TAQWA <span>تقوى</span></div>
                 <i class="fas fa-cog" style="color:#ccc; cursor:not-allowed"></i>
             </header>
 
-            <!-- Reciters Section -->
             <section id="reciters" class="section active">
                 <h1 style="font-size:1.2rem; margin-bottom:15px; color:#666;">اختر قارئك المفضل</h1>
                 <input type="text" class="search-bar" placeholder="ابحث عن قارئ (مثل: العفاسي)..." onkeyup="filterReciters(this.value)">
                 <div class="reciters-grid" id="recitersList"></div>
             </section>
 
-            <!-- Kids Section -->
             <section id="kids" class="section">
                 <div style="background:linear-gradient(45deg, #FF9F43, #ff6b6b); color:white; padding:25px; border-radius:20px; margin-bottom:20px; text-align:center; box-shadow: 0 10px 20px rgba(255, 159, 67, 0.3);">
                     <i class="fas fa-star fa-2x" style="margin-bottom:10px;"></i>
@@ -234,7 +216,6 @@
                 <div class="reciters-grid" id="kidsList"></div>
             </section>
 
-            <!-- Quran Reading Section -->
             <section id="quran" class="section">
                 <div style="text-align:center; padding-top:30px;">
                     <i class="fas fa-quran fa-4x" style="color:var(--primary); margin-bottom:20px;"></i>
@@ -245,7 +226,6 @@
                 </div>
             </section>
 
-            <!-- Tasbih Section -->
             <section id="tasbih" class="section">
                 <div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:10px; margin-bottom:10px;">
                     <button class="tasbih-cat active" style="border:none; background:var(--primary); color:white; padding:8px 20px; border-radius:20px; white-space:nowrap" onclick="setTasbih(this, 'سبحان الله')">سبحان الله</button>
@@ -264,7 +244,6 @@
         </main>
     </div>
 
-    <!-- Audio Player -->
     <div id="persistent-player">
         <div class="player-actions">
             <div class="mini-btn" onclick="minimizePlayer()">_</div>
@@ -284,12 +263,10 @@
         </div>
     </div>
 
-    <!-- Floating Icon -->
     <div id="kaaba-icon" onclick="maximizePlayer()">
         <i class="fas fa-compact-disc fa-spin" style="color:var(--gold); font-size:2rem; animation-duration: 3s;"></i>
     </div>
 
-    <!-- Playlist Modal -->
     <div id="playlistModal" style="position:fixed; bottom:0; left:0; width:100%; height:75vh; background:white; z-index:1000; border-radius:25px 25px 0 0; box-shadow:0 -10px 50px rgba(0,0,0,0.2); transform:translateY(110%); transition:0.3s cubic-bezier(0.4, 0, 0.2, 1); display:flex; flex-direction:column;">
         <div style="padding:20px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
             <span style="font-weight:bold; font-size:1.2rem;">قائمة السور</span>
@@ -298,7 +275,6 @@
         <div id="playlistContent" style="flex:1; overflow-y:auto; padding:10px;"></div>
     </div>
 
-    <!-- Reader Fullscreen -->
     <div id="fullReader" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#fffbf2; z-index:2000; display:none; flex-direction:column; overflow-y:auto;">
         <div style="position:fixed; top:20px; left:20px; z-index:2001;">
             <button onclick="closeReader()" style="background:var(--primary); color:white; width:45px; height:45px; border-radius:50%; border:none; box-shadow:0 5px 15px rgba(0,0,0,0.2); cursor:pointer;"><i class="fas fa-times"></i></button>
@@ -309,7 +285,6 @@
     <audio id="audio"></audio>
 
     <script>
-        // --- 1. إعدادات البيانات والمشغل ---
         const recitersData = [
             { id: 'afs', name: 'مشاري العفاسي', server: 'https://server8.mp3quran.net/afs/' },
             { id: 'maher', name: 'ماهر المعيقلي', server: 'https://server12.mp3quran.net/maher/' },
@@ -329,9 +304,7 @@
         let currentSurahIndex = 0;
         const audio = document.getElementById('audio');
 
-        // --- 2. تهيئة الموقع ---
         window.onload = async () => {
-            // شاشة الترحيب
             setTimeout(() => {
                 document.getElementById('splash').style.opacity = '0';
                 setTimeout(() => document.getElementById('splash').remove(), 1000);
@@ -341,7 +314,6 @@
             renderReciters();
             renderKids();
 
-            // تسجيل Service Worker للـ PWA
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('sw.js')
                 .then(reg => console.log('SW Registered', reg))
@@ -349,7 +321,6 @@
             }
         };
 
-        // --- 3. وظائف PWA وتثبيت التطبيق ---
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
@@ -369,7 +340,6 @@
             }
         }
 
-        // --- 4. وظيفة المشاركة Share ---
         async function shareApp() {
             const shareData = {
                 title: 'TAQWA – تقوى',
@@ -384,14 +354,12 @@
                     console.log('Error sharing:', err);
                 }
             } else {
-                // بديل للمتصفحات القديمة
                 const msg = encodeURIComponent(shareData.text + " " + shareData.url);
                 const whatsapp = `https://wa.me/?text=${msg}`;
                 window.open(whatsapp, '_blank');
             }
         }
 
-        // --- 5. وظائف المنطق الأساسية (كما كانت مع تحسينات طفيفة) ---
         async function fetchSurahs() {
             try {
                 const res = await fetch('https://api.alquran.cloud/v1/surah');
@@ -457,7 +425,6 @@
             }, 100);
         }
 
-        // --- وظائف التشغيل ---
         function playReciter(id) {
             currentReciter = recitersData.find(r => r.id === id);
             playAudio(currentReciter.server, currentReciter.name, 0);
@@ -476,7 +443,6 @@
             audio.src = url;
             audio.play();
             
-            // تحديث واجهة المشغل
             const player = document.getElementById('persistent-player');
             player.style.display = 'flex';
             document.getElementById('kaaba-icon').style.display = 'none';
@@ -484,7 +450,6 @@
             document.getElementById('p-reciter').innerText = reciterName;
             document.getElementById('playIcon').className = 'fas fa-pause';
             
-            // تحديث الميديا في شاشة القفل (للهواتف)
             if('mediaSession' in navigator) {
                 navigator.mediaSession.metadata = new MediaMetadata({
                     title: surah.name,
@@ -516,7 +481,6 @@
             } else {
                 content.innerHTML = '';
                 allSurahs.forEach((s, idx) => {
-                    // تمييز السورة الحالية
                     const isActive = idx === currentSurahIndex ? 'background:#f0f7f4; font-weight:bold; color:var(--primary);' : '';
                     content.innerHTML += `
                         <div style="padding:15px; border-bottom:1px solid #f9f9f9; display:flex; justify-content:space-between; cursor:pointer; border-radius:10px; ${isActive}" onclick="playAudio('${currentReciter.server}', '${currentReciter.name}', ${idx}); toggleSurahMenu()">
@@ -543,7 +507,6 @@
             document.getElementById('kaaba-icon').style.display = 'none';
         }
 
-        // --- وظائف التسبيح ---
         let tasbihCount = 0;
         function setTasbih(el, dhikr) {
             document.querySelectorAll('.tasbih-cat').forEach(c => {
@@ -565,7 +528,6 @@
             document.getElementById('tasbihVal').innerText = 0;
         }
 
-        // --- وظائف القراءة ---
         async function openReader() {
             const num = document.getElementById('readerSelect').value;
             if(!num) return;
@@ -578,7 +540,6 @@
                 let html = `<h2 style="color:var(--primary); margin-bottom:30px; text-align:center;">${data.data.name}</h2>`;
                 if(num!=1 && num!=9) html += `<div style="margin-bottom:20px; text-align:center;">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>`;
                 
-                // دمج الآيات
                 let fullText = "";
                 data.data.ayahs.forEach(a => {
                     fullText += `${a.text} <span style="color:var(--gold); font-size:0.7em; font-family:'Tajawal'; border:1px solid #ddd; border-radius:50%; width:25px; height:25px; display:inline-flex; justify-content:center; align-items:center; margin:0 5px;">${a.numberInSurah.toLocaleString('ar-EG')}</span> `;
@@ -589,13 +550,11 @@
         }
         function closeReader() { document.getElementById('fullReader').style.display = 'none'; }
 
-        // --- التنقل ---
         function switchTab(id) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             
-            // تحديد الزر النشط بناءً على الترتيب
             const btns = document.querySelectorAll('.nav-btn');
             if(id === 'reciters') btns[0].classList.add('active');
             if(id === 'kids') btns[1].classList.add('active');
