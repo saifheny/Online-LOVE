@@ -1,935 +1,623 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>PolyRoyale 3D - Browser FPS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق نور - النسخة المطورة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        body {
+        :root {
+            --primary: #1E4D40;
+            --gold: #C5A059;
+            --bg-body: #f5f5f0;
+            --white: #ffffff;
+            --glass: rgba(255, 255, 255, 0.95);
+        }
+
+        * {
+            box-sizing: border-box;
             margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231e4d40' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            color: #333;
+            height: 100vh;
+            display: flex;
             overflow: hidden;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #111;
-            user-select: none;
         }
 
-        #game-ui {
-            position: absolute;
+        #splashScreen {
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none;
-            display: none; /* Hidden on menu */
-        }
-
-        /* HUD Elements */
-        #crosshair {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 20px;
-            height: 20px;
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-        }
-        #crosshair::before, #crosshair::after {
-            content: '';
-            position: absolute;
-            background: rgba(255, 255, 255, 0.8);
-        }
-        #crosshair::before { top: 9px; left: 0; width: 20px; height: 2px; }
-        #crosshair::after { top: 0; left: 9px; width: 2px; height: 20px; }
-
-        #hud-bottom-left {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        #health-container {
-            width: 300px;
-            height: 20px;
-            background: rgba(0,0,0,0.5);
-            border: 2px solid #333;
-            border-radius: 4px;
-        }
-
-        #health-bar {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, #ff3333, #ff0000);
-            transition: width 0.2s;
-        }
-
-        #health-text {
-            color: white;
-            font-weight: bold;
-            font-size: 24px;
-            text-shadow: 1px 1px 2px black;
-        }
-
-        #hud-bottom-right {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            text-align: right;
-            color: white;
-        }
-
-        #ammo-display {
-            font-size: 48px;
-            font-weight: bold;
-            text-shadow: 2px 2px 0px rgba(0,0,0,0.5);
-        }
-        #weapon-name {
-            font-size: 18px;
-            color: #aaa;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        #kill-feed {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 5px;
-        }
-        .kill-msg {
-            background: rgba(0,0,0,0.6);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 14px;
-            animation: fadeOut 4s forwards;
-        }
-
-        @keyframes fadeOut {
-            0% { opacity: 1; }
-            70% { opacity: 1; }
-            100% { opacity: 0; }
-        }
-
-        #menu-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.85);
+            background: var(--primary);
+            z-index: 9999;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             color: white;
-            z-index: 10;
-            pointer-events: auto;
+            transition: opacity 1s ease-in-out;
         }
 
-        h1 { font-size: 64px; margin: 0 0 20px 0; color: #ff3333; text-transform: uppercase; letter-spacing: 5px; }
-        p { font-size: 18px; color: #ccc; max-width: 600px; text-align: center; line-height: 1.6; }
-        
-        .btn {
-            margin-top: 30px;
-            padding: 15px 40px;
-            font-size: 24px;
-            background: #ff3333;
+        .splash-icon {
+            font-size: 5rem;
+            color: var(--gold);
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        .splash-text {
+            font-family: 'Amiri', serif;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .sidebar {
+            width: 80px;
+            background: var(--white);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+            box-shadow: -2px 0 15px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .nav-item {
+            width: 50px;
+            height: 50px;
+            margin: 15px 0;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            color: #888;
+            transition: 0.3s;
+            font-size: 1.4rem;
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: var(--white);
+            box-shadow: 0 5px 15px rgba(30, 77, 64, 0.4);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        .section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .quran-header {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .surah-select {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            border: 2px solid #ddd;
+            font-size: 1.1rem;
+            outline: none;
+        }
+
+        .zoom-btn {
+            background: var(--primary);
             color: white;
             border: none;
-            border-radius: 5px;
+            padding: 0 20px;
+            border-radius: 12px;
+            font-size: 1.2rem;
             cursor: pointer;
-            transition: transform 0.1s, background 0.1s;
-            text-transform: uppercase;
-            font-weight: bold;
         }
-        .btn:hover { background: #ff5555; transform: scale(1.05); }
 
-        #controls-hint {
-            margin-top: 40px;
+        .quran-page {
+            background: #FFFBF0;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            border: 1px solid #E6DCC3;
+            min-height: 70vh;
+        }
+
+        .quran-text {
+            font-family: 'Amiri', serif;
+            font-size: 26px;
+            line-height: 2.5;
+            text-align: justify;
+            text-align-last: center;
+        }
+
+        .avatars-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px 40px;
-            text-align: left;
-            font-size: 14px;
-            color: #888;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+            justify-items: center;
         }
-        .key { color: white; font-weight: bold; }
 
-        #damage-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, transparent 50%, rgba(255,0,0,0.4) 100%);
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.1s;
+        .sheikh-avatar-container {
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .sheikh-avatar-container:hover { transform: translateY(-10px); }
+
+        .sheikh-img-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e0f2f1, #b2dfdb);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            color: var(--primary);
+            border: 4px solid white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+            overflow: hidden;
         }
         
-        #wave-info {
+        .sheikh-img-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .sheikh-name {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--primary);
+        }
+
+        .sheikh-playlist {
+            display: none;
+        }
+
+        .playlist-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .back-btn {
+            background: #eee;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .surah-list-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.2s;
+            border-right: 4px solid transparent;
+        }
+
+        .surah-list-item:hover, .surah-list-item.active {
+            background: #e0f2f1;
+            border-right-color: var(--primary);
+        }
+
+        .audio-status {
+            font-size: 0.8rem;
+            color: var(--gold);
+        }
+
+        .kids-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .kid-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .kid-card:hover { transform: scale(1.05); border-color: #FFB74D; }
+
+        .kid-icon { font-size: 3rem; margin-bottom: 10px; color: #FF9800; }
+
+        .teacher-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #FFFBF0;
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .teacher-content {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .big-ayah-text {
+            font-family: 'Amiri', serif;
+            font-size: 45px;
+            line-height: 2;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        .close-teacher {
             position: absolute;
             top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
+            left: 20px;
+            background: #ff5252;
             color: white;
-            font-size: 24px;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
             font-weight: bold;
-            text-shadow: 1px 1px 4px black;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            body { flex-direction: column-reverse; }
+            .sidebar {
+                width: 100%; height: 70px; flex-direction: row; justify-content: space-around; padding: 0;
+            }
+            .nav-item { margin: 0; }
+            .main-content { height: calc(100vh - 70px); }
+            .quran-text { font-size: 20px; }
+            .big-ayah-text { font-size: 30px; }
         }
     </style>
-    
-    <!-- Import Map for Three.js -->
-    <script type="importmap">
-        {
-            "imports": {
-                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-            }
-        }
-    </script>
 </head>
 <body>
 
-    <!-- Game UI -->
-    <div id="game-ui">
-        <div id="damage-overlay"></div>
-        <div id="crosshair"></div>
-        <div id="wave-info">WAVE 1 | ENEMIES: 0</div>
-        
-        <div id="hud-bottom-left">
-            <div id="health-text">100 HP</div>
-            <div id="health-container">
-                <div id="health-bar"></div>
+    <div id="splashScreen">
+        <i class="fas fa-kaaba splash-icon"></i>
+        <div class="splash-text">بسم الله الرحمن الرحيم</div>
+    </div>
+
+    <nav class="sidebar">
+        <div class="nav-item active" onclick="switchTab('quran')"><i class="fas fa-book-open"></i></div>
+        <div class="nav-item" onclick="switchTab('audio')"><i class="fas fa-headphones"></i></div>
+        <div class="nav-item" onclick="switchTab('kids')"><i class="fas fa-child"></i></div>
+    </nav>
+
+    <main class="main-content">
+
+        <section id="quran" class="section active">
+            <div class="quran-header">
+                <select id="quranSelect" class="surah-select" onchange="loadQuranSurah(this.value)">
+                    <option value="" disabled selected>اختر السورة...</option>
+                </select>
+                <button class="zoom-btn" onclick="toggleZoom()"><i class="fas fa-expand"></i></button>
+            </div>
+            <div class="quran-page" id="quranDisplay">
+                <div style="text-align: center; margin-top: 50px; color: #888;">
+                    <i class="fas fa-book fa-3x"></i>
+                    <p style="margin-top: 15px;">اختر سورة للبدء</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="audio" class="section">
+            
+            <div id="sheikhsList">
+                <h2 style="margin-bottom: 20px; color: var(--primary);">اختر القارئ</h2>
+                <div class="avatars-grid">
+                </div>
+            </div>
+
+            <div id="surahPlaylist" class="sheikh-playlist">
+                <div class="playlist-header">
+                    <button class="back-btn" onclick="backToSheikhs()"><i class="fas fa-arrow-right"></i></button>
+                    <div>
+                        <h3 id="selectedSheikhName" style="margin: 0;">اسم الشيخ</h3>
+                        <p style="font-size: 0.8rem; color: #666;">التشغيل التلقائي مفعل <i class="fas fa-check-circle" style="color: green;"></i></p>
+                    </div>
+                </div>
+                
+                <audio id="mainAudio" controls style="width: 100%; margin-bottom: 15px;"></audio>
+                
+                <div id="playlistItems">
+                </div>
+            </div>
+        </section>
+
+        <section id="kids" class="section">
+            <h2 style="text-align: center; color: #FF9800; margin-bottom: 20px;">
+                <i class="fas fa-star"></i> المصحف المعلم <i class="fas fa-star"></i>
+            </h2>
+            <div class="kids-grid" id="kidsGrid"></div>
+        </section>
+
+    </main>
+
+    <div id="teacherModal" class="teacher-modal">
+        <button class="close-teacher" onclick="closeTeacherMode()">خروج</button>
+        <div class="teacher-content">
+            <h2 id="teacherSurahName" style="color: var(--primary); margin-bottom: 20px;"></h2>
+            
+            <audio id="teacherAudio" controls style="width: 80%; margin: 0 auto; display: block;"></audio>
+            
+            <div id="teacherText" class="big-ayah-text">
+                جاري التحميل...
             </div>
         </div>
-
-        <div id="hud-bottom-right">
-            <div id="ammo-display">30 / 90</div>
-            <div id="weapon-name">Assault Rifle</div>
-        </div>
-
-        <div id="kill-feed"></div>
     </div>
 
-    <!-- Menu Overlay -->
-    <div id="menu-overlay">
-        <h1>PolyRoyale 3D</h1>
-        <p>Survive the waves of bots. Use cover, manage ammo, and aim for the head.</p>
+    <script>
+        const API_TEXT = "https://api.alquran.cloud/v1";
         
-        <div id="controls-hint">
-            <div><span class="key">WASD</span> Move</div>
-            <div><span class="key">MOUSE</span> Look & Shoot</div>
-            <div><span class="key">R</span> Reload</div>
-            <div><span class="key">1-4</span> Switch Weapon</div>
-            <div><span class="key">SHIFT</span> Sprint</div>
-            <div><span class="key">SPACE</span> Jump</div>
-            <div><span class="key">C</span> Crouch</div>
-        </div>
-
-        <button id="start-btn" class="btn">Play Now</button>
-    </div>
-
-    <!-- Game Logic -->
-    <script type="module">
-        import * as THREE from 'three';
-        import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
-
-        // --- Audio System (Synthesized) ---
-        class SoundManager {
-            constructor() {
-                this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-                this.masterGain = this.ctx.createGain();
-                this.masterGain.gain.value = 0.3; // Lower volume
-                this.masterGain.connect(this.ctx.destination);
-            }
-
-            playShoot(type) {
-                if (this.ctx.state === 'suspended') this.ctx.resume();
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                const noise = this.ctx.createBufferSource();
-                const bufferSize = this.ctx.sampleRate * 0.5; // 0.5s buffer
-                const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-                const data = buffer.getChannelData(0);
-
-                // Create noise
-                for (let i = 0; i < bufferSize; i++) {
-                    data[i] = Math.random() * 2 - 1;
-                }
-                
-                noise.buffer = buffer;
-                
-                // Filter for "bang" sound
-                const filter = this.ctx.createBiquadFilter();
-                filter.type = 'lowpass';
-                
-                if (type === 'rifle') {
-                    filter.frequency.setValueAtTime(1000, this.ctx.currentTime);
-                    filter.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.1);
-                    gain.gain.setValueAtTime(0.5, this.ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
-                } else if (type === 'shotgun') {
-                    filter.frequency.setValueAtTime(800, this.ctx.currentTime);
-                    filter.frequency.exponentialRampToValueAtTime(50, this.ctx.currentTime + 0.3);
-                    gain.gain.setValueAtTime(0.8, this.ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
-                } else if (type === 'sniper') {
-                    filter.frequency.setValueAtTime(2000, this.ctx.currentTime);
-                    filter.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.4);
-                    gain.gain.setValueAtTime(1, this.ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
-                }
-
-                noise.connect(filter);
-                filter.connect(gain);
-                gain.connect(this.masterGain);
-                noise.start();
-                noise.stop(this.ctx.currentTime + 0.5);
-            }
-
-            playReload() {
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(200, this.ctx.currentTime);
-                osc.frequency.linearRampToValueAtTime(400, this.ctx.currentTime + 0.3);
-                gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
-                gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.3);
-                osc.connect(gain);
-                gain.connect(this.masterGain);
-                osc.start();
-                osc.stop(this.ctx.currentTime + 0.3);
-            }
-
-            playHit() {
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(800, this.ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.1);
-                gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
-                gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.1);
-                osc.connect(gain);
-                gain.connect(this.masterGain);
-                osc.start();
-                osc.stop(this.ctx.currentTime + 0.1);
-            }
-        }
-
-        const audio = new SoundManager();
-
-        // --- Config & Globals ---
-        const SCENE_SIZE = 400;
-        const GRAVITY = 30;
-        const JUMP_FORCE = 15;
-        const PLAYER_HEIGHT = 1.8;
-        const PLAYER_SPEED = 10;
-        const PLAYER_RUN_SPEED = 18;
+        const KIDS_AUDIO_SERVER = "https://server6.mp3quran.net/husr_m/"; 
         
-        let scene, camera, renderer, controls;
-        let obstacles = []; // Store meshes for visibility checks
-        let raycaster;
-        let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
-        let canJump = false;
-        let isSprinting = false;
-        let isCrouching = false;
-        let prevTime = performance.now();
-        let velocity = new THREE.Vector3();
-        let direction = new THREE.Vector3();
-        
-        let worldObjects = []; // Collidable objects
-        let enemies = [];
-        let projectiles = [];
-        let particles = [];
-        let gameActive = false;
-        let lastShotTime = 0;
-        let wave = 1;
-        let enemiesToSpawn = 5;
-        let score = 0;
+        const reciters = [
+            { id: 'afs', name: 'مشاري العفاسي', server: 'https://server8.mp3quran.net/afs/', icon: 'fa-user-tie', color: '#1abc9c' },
+            { id: 'sds', name: 'عبدالرحمن السديس', server: 'https://server11.mp3quran.net/sds/', icon: 'fa-user-check', color: '#2ecc71' },
+            { id: 'shur', name: 'سعود الشريم', server: 'https://server7.mp3quran.net/shur/', icon: 'fa-user-astronaut', color: '#3498db' },
+            { id: 'basit', name: 'عبدالباسط (مجود)', server: 'https://server7.mp3quran.net/basit/', icon: 'fa-microphone-alt', color: '#9b59b6' },
+            { id: 'minsh', name: 'المنشاوي', server: 'https://server10.mp3quran.net/minsh/', icon: 'fa-mosque', color: '#f1c40f' },
+            { id: 'hudifi', name: 'الحذيفي', server: 'https://server6.mp3quran.net/hthfi/', icon: 'fa-book-reader', color: '#e67e22' },
+            { id: 'maher', name: 'ماهر المعيقلي', server: 'https://server12.mp3quran.net/maher/', icon: 'fa-water', color: '#e74c3c' },
+            { id: 'ajm', name: 'أحمد العجمي', server: 'https://server10.mp3quran.net/ajm/', icon: 'fa-microphone', color: '#34495e' }
+        ];
 
-        // --- Player State ---
-        const player = {
-            hp: 100,
-            maxHp: 100,
-            weaponIdx: 0,
-            weapons: [
-                { name: 'Assault Rifle', type: 'auto', dmg: 15, rate: 100, spread: 0.02, mag: 30, ammo: 120, maxMag: 30, range: 200, sound: 'rifle' },
-                { name: 'Shotgun', type: 'semi', dmg: 12, pellets: 8, rate: 800, spread: 0.15, mag: 6, ammo: 24, maxMag: 6, range: 50, sound: 'shotgun' },
-                { name: 'Sniper Rifle', type: 'semi', dmg: 90, rate: 1200, spread: 0.001, mag: 5, ammo: 20, maxMag: 5, range: 500, sound: 'sniper' },
-                { name: 'Pistol', type: 'semi', dmg: 20, rate: 250, spread: 0.03, mag: 12, ammo: 999, maxMag: 12, range: 100, sound: 'rifle' }
-            ],
-            currentMag: 30,
-            reloading: false
+        let allSurahs = [];
+        let currentReciter = null;
+        let currentSurahIndex = 0; 
+
+        window.onload = async () => {
+            setTimeout(() => {
+                const splash = document.getElementById('splashScreen');
+                splash.style.opacity = '0';
+                setTimeout(() => splash.remove(), 1000);
+            }, 2500);
+
+            await fetchSurahs();
+            renderReciters();
+            
+            const mainAudio = document.getElementById('mainAudio');
+            mainAudio.addEventListener('ended', playNextSurah);
         };
 
-        // --- Init ---
-        function init() {
-            // Setup Three.js
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x87CEEB); // Sky blue
-            scene.fog = new THREE.Fog(0x87CEEB, 10, 150);
-
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            
-            // Renderer
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.shadowMap.enabled = true;
-            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-            document.body.appendChild(renderer.domElement);
-
-            // Lighting
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-            scene.add(ambientLight);
-
-            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            dirLight.position.set(50, 100, 50);
-            dirLight.castShadow = true;
-            dirLight.shadow.camera.left = -100;
-            dirLight.shadow.camera.right = 100;
-            dirLight.shadow.camera.top = 100;
-            dirLight.shadow.camera.bottom = -100;
-            dirLight.shadow.mapSize.width = 2048;
-            dirLight.shadow.mapSize.height = 2048;
-            scene.add(dirLight);
-
-            // Controls
-            controls = new PointerLockControls(camera, document.body);
-            
-            const startBtn = document.getElementById('start-btn');
-            startBtn.addEventListener('click', () => {
-                controls.lock();
-            });
-
-            controls.addEventListener('lock', () => {
-                document.getElementById('menu-overlay').style.display = 'none';
-                document.getElementById('game-ui').style.display = 'block';
-                if (!gameActive) startGame();
-                gameActive = true;
-                if (audio.ctx.state === 'suspended') audio.ctx.resume();
-            });
-
-            controls.addEventListener('unlock', () => {
-                if (player.hp > 0) {
-                    // Show pause menu (reuse start menu for now)
-                    document.getElementById('menu-overlay').style.display = 'flex';
-                    document.querySelector('#menu-overlay h1').innerText = "PAUSED";
-                    document.getElementById('start-btn').innerText = "RESUME";
-                }
-            });
-
-            // Map Generation
-            createMap();
-
-            // Raycaster for shooting
-            raycaster = new THREE.Raycaster();
-
-            // Event Listeners
-            document.addEventListener('keydown', onKeyDown);
-            document.addEventListener('keyup', onKeyUp);
-            document.addEventListener('mousedown', onMouseDown);
-            window.addEventListener('resize', onWindowResize);
-
-            // Start Loop
-            animate();
-        }
-
-        function createMap() {
-            // Ground
-            const floorGeo = new THREE.PlaneGeometry(SCENE_SIZE, SCENE_SIZE);
-            floorGeo.rotateX(-Math.PI / 2);
-            const floorMat = new THREE.MeshStandardMaterial({ color: 0x3a5f0b });
-            const floor = new THREE.Mesh(floorGeo, floorMat);
-            floor.receiveShadow = true;
-            scene.add(floor);
-
-            // Obstacles
-            const boxGeo = new THREE.BoxGeometry(1, 1, 1);
-            const boxMat = new THREE.MeshStandardMaterial({ color: 0x555555 });
-            const treeGeo = new THREE.CylinderGeometry(0.5, 0.8, 4, 8);
-            const treeMat = new THREE.MeshStandardMaterial({ color: 0x4a3c31 });
-            const leavesGeo = new THREE.ConeGeometry(2.5, 5, 8);
-            const leavesMat = new THREE.MeshStandardMaterial({ color: 0x1a4a1a });
-
-            // Random generation
-            for (let i = 0; i < 60; i++) {
-                // Buildings/Rocks
-                if (i < 20) {
-                    const sx = Math.random() * 10 + 5;
-                    const sy = Math.random() * 8 + 4;
-                    const sz = Math.random() * 10 + 5;
-                    const mesh = new THREE.Mesh(boxGeo, boxMat);
-                    mesh.position.set(
-                        (Math.random() - 0.5) * (SCENE_SIZE - 20),
-                        sy / 2,
-                        (Math.random() - 0.5) * (SCENE_SIZE - 20)
-                    );
-                    mesh.scale.set(sx, sy, sz);
-                    mesh.castShadow = true;
-                    mesh.receiveShadow = true;
-                    scene.add(mesh);
-                    
-                    obstacles.push(mesh); // Add for sight checks
-
-                    // Add bounding box for collision
-                    const bbox = new THREE.Box3().setFromObject(mesh);
-                    worldObjects.push(bbox);
-                } 
-                // Trees
-                else {
-                    const x = (Math.random() - 0.5) * (SCENE_SIZE - 20);
-                    const z = (Math.random() - 0.5) * (SCENE_SIZE - 20);
-                    
-                    const trunk = new THREE.Mesh(treeGeo, treeMat);
-                    trunk.position.set(x, 2, z);
-                    trunk.castShadow = true;
-                    trunk.receiveShadow = true;
-                    scene.add(trunk);
-                    obstacles.push(trunk); // Add for sight checks
-
-                    const leaves = new THREE.Mesh(leavesGeo, leavesMat);
-                    leaves.position.set(x, 5.5, z);
-                    leaves.castShadow = true;
-                    leaves.receiveShadow = true;
-                    scene.add(leaves);
-                    obstacles.push(leaves); // Add for sight checks
-
-                    const bbox = new THREE.Box3().setFromObject(trunk);
-                    // Make collision box slightly bigger for trees
-                    bbox.expandByScalar(0.5);
-                    worldObjects.push(bbox);
-                }
-            }
-        }
-
-        function startGame() {
-            // Reset Player
-            player.hp = 100;
-            player.weapons.forEach(w => {
-                if(w.name !== 'Pistol') w.ammo = w.maxMag * 3; // Reset extra ammo
-            });
-            player.currentMag = player.weapons[player.weaponIdx].maxMag;
-            
-            camera.position.set(0, PLAYER_HEIGHT, 0);
-            controls.getObject().position.set(0, PLAYER_HEIGHT, 0);
-            
-            // Reset Wave
-            enemies.forEach(e => scene.remove(e.mesh));
-            enemies = [];
-            wave = 1;
-            score = 0;
-            
-            spawnWave();
-            updateHUD();
-        }
-
-        function spawnWave() {
-            const count = wave * 2 + 3; // Difficulty curve
-            document.getElementById('wave-info').innerText = `WAVE ${wave} | ENEMIES: ${count}`;
-            
-            for (let i = 0; i < count; i++) {
-                spawnEnemy();
-            }
-        }
-
-        function spawnEnemy() {
-            const angle = Math.random() * Math.PI * 2;
-            const dist = 30 + Math.random() * 40; // Spawn distance
-            const x = controls.getObject().position.x + Math.cos(angle) * dist;
-            const z = controls.getObject().position.z + Math.sin(angle) * dist;
-
-            // Simple Enemy Mesh
-            const geometry = new THREE.CapsuleGeometry(0.7, 1.8, 4, 8);
-            const material = new THREE.MeshStandardMaterial({ color: 0xff0000 });
-            const mesh = new THREE.Mesh(geometry, material);
-            mesh.position.set(x, 1.9, z); // Center point height
-            mesh.castShadow = true;
-            
-            scene.add(mesh);
-
-            enemies.push({
-                mesh: mesh,
-                hp: 100 + (wave * 10),
-                state: 'chase', // Simplified AI
-                speed: 3 + (Math.random() * 2) + (wave * 0.2),
-                lastAttack: 0,
-                attackRate: 1000,
-                range: 1.5 // Melee range mostly, will add shooting later logic
-            });
-        }
-
-        // --- Controls Handling ---
-        function onKeyDown(event) {
-            switch (event.code) {
-                case 'ArrowUp':
-                case 'KeyW': moveForward = true; break;
-                case 'ArrowLeft':
-                case 'KeyA': moveLeft = true; break;
-                case 'ArrowDown':
-                case 'KeyS': moveBackward = true; break;
-                case 'ArrowRight':
-                case 'KeyD': moveRight = true; break;
-                case 'Space': if (canJump) velocity.y += JUMP_FORCE; canJump = false; break;
-                case 'ShiftLeft': isSprinting = true; break;
-                case 'KeyC': isCrouching = true; break;
-                case 'KeyR': reload(); break;
-                case 'Digit1': switchWeapon(0); break;
-                case 'Digit2': switchWeapon(1); break;
-                case 'Digit3': switchWeapon(2); break;
-                case 'Digit4': switchWeapon(3); break;
-            }
-        }
-
-        function onKeyUp(event) {
-            switch (event.code) {
-                case 'ArrowUp':
-                case 'KeyW': moveForward = false; break;
-                case 'ArrowLeft':
-                case 'KeyA': moveLeft = false; break;
-                case 'ArrowDown':
-                case 'KeyS': moveBackward = false; break;
-                case 'ArrowRight':
-                case 'KeyD': moveRight = false; break;
-                case 'ShiftLeft': isSprinting = false; break;
-                case 'KeyC': isCrouching = false; break;
-            }
-        }
-
-        function onMouseDown(event) {
-            if (!gameActive) return;
-            if (player.reloading) return;
-            if (player.currentMag <= 0) {
-                reload();
-                return;
-            }
-
-            const now = performance.now();
-            const weapon = player.weapons[player.weaponIdx];
-
-            if (now - lastShotTime >= weapon.rate) {
-                fireWeapon(weapon);
-                lastShotTime = now;
-            }
-        }
-
-        // --- Core Mechanics ---
-        function switchWeapon(idx) {
-            if (idx >= player.weapons.length) return;
-            player.weaponIdx = idx;
-            player.currentMag = Math.min(player.weapons[idx].mag, player.weapons[idx].maxMag);
-            player.reloading = false;
-            
-            // Visual feedback weapon bob
-            camera.position.y -= 0.1;
-            setTimeout(() => camera.position.y += 0.1, 100);
-            
-            updateHUD();
-        }
-
-        function reload() {
-            if (player.reloading) return;
-            const w = player.weapons[player.weaponIdx];
-            if (w.currentMag === w.maxMag) return;
-            if (w.name !== 'Pistol' && w.ammo <= 0) return;
-
-            player.reloading = true;
-            document.getElementById('ammo-display').innerText = "RELOADING...";
-            audio.playReload();
-
-            setTimeout(() => {
-                if (w.name === 'Pistol') {
-                    player.currentMag = w.maxMag;
-                } else {
-                    const needed = w.maxMag - player.currentMag;
-                    const toLoad = Math.min(needed, w.ammo);
-                    player.currentMag += toLoad;
-                    w.ammo -= toLoad;
-                }
-                player.reloading = false;
-                updateHUD();
-            }, 1500);
-        }
-
-        function fireWeapon(weapon) {
-            player.currentMag--;
-            audio.playShoot(weapon.sound);
-            
-            // Recoil
-            camera.rotation.x += 0.002 * (Math.random() < 0.5 ? 1 : 1);
-            
-            // Raycasting
-            const shots = weapon.name === 'Shotgun' ? weapon.pellets : 1;
-            
-            for(let i=0; i<shots; i++) {
-                // Calculate spread
-                const spreadX = (Math.random() - 0.5) * weapon.spread;
-                const spreadY = (Math.random() - 0.5) * weapon.spread;
+        async function fetchSurahs() {
+            try {
+                const res = await fetch(`${API_TEXT}/surah`);
+                const data = await res.json();
+                allSurahs = data.data;
                 
-                // Get center ray
-                raycaster.setFromCamera(new THREE.Vector2(spreadX, spreadY), camera);
+                const quranSelect = document.getElementById('quranSelect');
+                const kidsGrid = document.getElementById('kidsGrid');
 
-                const intersects = raycaster.intersectObjects(scene.children);
-                
-                // Visual Tracers
-                createTracer(raycaster.ray.origin, raycaster.ray.direction, weapon.range);
+                allSurahs.forEach(surah => {
+                    quranSelect.innerHTML += `<option value="${surah.number}">${surah.number}. ${surah.name}</option>`;
 
-                if (intersects.length > 0) {
-                    const hit = intersects[0];
-                    if (hit.distance <= weapon.range) {
-                        // Check if enemy
-                        const enemy = enemies.find(e => e.mesh === hit.object);
-                        if (enemy) {
-                            damageEnemy(enemy, weapon.dmg);
-                            createImpact(hit.point, 0xff0000);
-                        } else {
-                            createImpact(hit.point, 0xaaaaaa);
-                        }
+                    if (surah.number >= 78 || surah.number === 1) {
+                        kidsGrid.innerHTML += `
+                            <div class="kid-card" onclick="openTeacherMode(${surah.number}, '${surah.name}')">
+                                <i class="fas fa-cloud-sun kid-icon"></i>
+                                <h3>${surah.name}</h3>
+                            </div>
+                        `;
                     }
-                }
-            }
-            updateHUD();
+                });
+            } catch (e) { console.error("Error fetching surahs"); }
         }
 
-        function createTracer(start, dir, range) {
-            // Simplified tracer: just a line that moves quickly or fades
-            // Due to single file constraints, we'll draw a line and fade it
-            const end = new THREE.Vector3().copy(start).add(dir.multiplyScalar(range/2)); // shorter visual range
-            const geometry = new THREE.BufferGeometry().setFromPoints([start, end]);
-            const material = new THREE.LineBasicMaterial({ color: 0xffff00, transparent: true, opacity: 0.8 });
-            const line = new THREE.Line(geometry, material);
-            scene.add(line);
+        function switchTab(tab) {
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             
-            // Offset to gun position (roughly bottom right)
-            // Ideally we transform local to world, but for now center screen is okay for "doom style" feel
+            document.getElementById(tab).classList.add('active');
             
-            projectiles.push({ mesh: line, life: 0.1 }); // 100ms life
+            const navs = document.querySelectorAll('.nav-item');
+            if(tab === 'quran') navs[0].classList.add('active');
+            if(tab === 'audio') navs[1].classList.add('active');
+            if(tab === 'kids') navs[2].classList.add('active');
         }
 
-        function createImpact(pos, color) {
-            const geo = new THREE.BoxGeometry(0.1, 0.1, 0.1);
-            const mat = new THREE.MeshBasicMaterial({ color: color });
-            const mesh = new THREE.Mesh(geo, mat);
-            mesh.position.copy(pos);
-            scene.add(mesh);
-            projectiles.push({ mesh: mesh, life: 0.5 });
-        }
-
-        function damageEnemy(enemy, dmg) {
-            enemy.hp -= dmg;
-            audio.playHit();
+        async function loadQuranSurah(number) {
+            const display = document.getElementById('quranDisplay');
+            display.innerHTML = '<div style="text-align:center;">جاري التحميل...</div>';
             
-            // Flash enemy white
-            enemy.mesh.material.emissive.setHex(0xffffff);
-            setTimeout(() => {
-                if(enemy.mesh) enemy.mesh.material.emissive.setHex(0x000000);
-            }, 50);
-
-            if (enemy.hp <= 0) {
-                // Kill
-                scene.remove(enemy.mesh);
-                enemies = enemies.filter(e => e !== enemy);
-                score++;
-                showKillMsg();
+            try {
+                const res = await fetch(`${API_TEXT}/surah/${number}/quran-uthmani`);
+                const data = await res.json();
                 
-                // Drop ammo?
-                if (Math.random() > 0.7) {
-                    player.weapons[0].ammo += 15; // Refill rifle
-                }
+                let html = `<h2 style="text-align:center; color:#1E4D40; margin-bottom:20px;">${data.data.name}</h2>`;
+                if(number != 1 && number != 9) html += `<div style="text-align:center; font-family:'Amiri'; font-size:24px; margin-bottom:20px;">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>`;
                 
-                document.getElementById('wave-info').innerText = `WAVE ${wave} | ENEMIES: ${enemies.length}`;
-                
-                if (enemies.length === 0) {
-                    wave++;
-                    setTimeout(spawnWave, 3000);
-                    showKillMsg("WAVE COMPLETE!");
-                }
-            }
+                html += '<div class="quran-text">';
+                data.data.ayahs.forEach(ayah => {
+                    let text = ayah.text;
+                    if(number != 1 && ayah.numberInSurah === 1) text = text.replace("بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ", "").trim();
+                    html += `${text} <span style="color:#C5A059; font-size:0.8em">(${toArabicNum(ayah.numberInSurah)})</span> `;
+                });
+                html += '</div>';
+                display.innerHTML = html;
+            } catch(e) { display.innerHTML = "حدث خطأ"; }
         }
 
-        function showKillMsg(text = "ENEMY ELIMINATED") {
-            const feed = document.getElementById('kill-feed');
-            const msg = document.createElement('div');
-            msg.className = 'kill-msg';
-            msg.innerText = text;
-            feed.appendChild(msg);
-            setTimeout(() => msg.remove(), 4000);
-        }
-
-        function damagePlayer(amount) {
-            player.hp -= amount;
-            updateHUD();
-            
-            // Red flash overlay
-            const overlay = document.getElementById('damage-overlay');
-            overlay.style.opacity = 0.8;
-            setTimeout(() => overlay.style.opacity = 0, 300);
-
-            if (player.hp <= 0) {
-                gameOver();
-            }
-        }
-
-        function gameOver() {
-            gameActive = false;
-            controls.unlock();
-            document.getElementById('menu-overlay').style.display = 'flex';
-            document.querySelector('#menu-overlay h1').innerText = "GAME OVER";
-            document.querySelector('#menu-overlay p').innerText = `You survived to Wave ${wave}. Total Kills: ${score}`;
-            document.getElementById('start-btn').innerText = "RESTART";
-        }
-
-        function updateHUD() {
-            const w = player.weapons[player.weaponIdx];
-            const ammoText = w.name === 'Pistol' ? `${player.currentMag} / ∞` : `${player.currentMag} / ${w.ammo}`;
-            document.getElementById('ammo-display').innerText = ammoText;
-            document.getElementById('weapon-name').innerText = w.name;
-            
-            const hpPct = Math.max(0, (player.hp / player.maxHp) * 100);
-            document.getElementById('health-bar').style.width = hpPct + '%';
-            document.getElementById('health-text').innerText = Math.ceil(player.hp) + " HP";
-        }
-
-        // --- Physics & Updates ---
-        function checkCollision(position) {
-            const playerBox = new THREE.Box3();
-            // Player AABB approx 1x2x1
-            const min = new THREE.Vector3(position.x - 0.5, position.y - 1.8, position.z - 0.5);
-            const max = new THREE.Vector3(position.x + 0.5, position.y + 0.2, position.z + 0.5);
-            playerBox.set(min, max);
-
-            for (let objBox of worldObjects) {
-                if (playerBox.intersectsBox(objBox)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-
-            if (!gameActive) {
-                renderer.render(scene, camera);
-                return;
-            }
-
-            const time = performance.now();
-            const delta = (time - prevTime) / 1000;
-            prevTime = time;
-
-            // --- Player Movement ---
-            velocity.x -= velocity.x * 10.0 * delta;
-            velocity.z -= velocity.z * 10.0 * delta;
-            velocity.y -= GRAVITY * delta; // Gravity
-
-            direction.z = Number(moveForward) - Number(moveBackward);
-            direction.x = Number(moveRight) - Number(moveLeft);
-            direction.normalize();
-
-            const speed = isSprinting ? PLAYER_RUN_SPEED : PLAYER_SPEED;
-
-            if (moveForward || moveBackward) velocity.z -= direction.z * speed * 100.0 * delta; // 100.0 = acceleration factor
-            if (moveLeft || moveRight) velocity.x -= direction.x * speed * 100.0 * delta;
-
-            // Apply Move
-            const oldPos = controls.getObject().position.clone();
-            
-            controls.moveRight(-velocity.x * delta);
-            controls.moveForward(-velocity.z * delta);
-            controls.getObject().position.y += velocity.y * delta; // Vertical move
-
-            // Floor Collision
-            if (controls.getObject().position.y < PLAYER_HEIGHT) {
-                velocity.y = 0;
-                controls.getObject().position.y = PLAYER_HEIGHT;
-                canJump = true;
-                
-                // Crouch logic
-                if (isCrouching) {
-                     camera.position.y = THREE.MathUtils.lerp(camera.position.y, 1.0, 0.1);
-                } else {
-                     camera.position.y = THREE.MathUtils.lerp(camera.position.y, PLAYER_HEIGHT, 0.1);
-                }
+        function toggleZoom() {
+            const page = document.getElementById('quranDisplay');
+            if(page.style.position === 'fixed') {
+                page.style.position = 'static';
+                page.style.zIndex = 'auto';
+                page.style.height = 'auto';
+                page.style.width = 'auto';
+                page.style.overflow = 'visible';
+                page.style.top = 'auto';
+                page.style.left = 'auto';
             } else {
-                 // In air
+                page.style.position = 'fixed';
+                page.style.zIndex = '1000';
+                page.style.top = '0';
+                page.style.left = '0';
+                page.style.width = '100%';
+                page.style.height = '100%';
+                page.style.overflow = 'auto';
             }
+        }
 
-            // Wall Collision (Simple revert if hitting object)
-            if (checkCollision(controls.getObject().position)) {
-                controls.getObject().position.x = oldPos.x;
-                controls.getObject().position.z = oldPos.z;
-            }
+        function renderReciters() {
+            const container = document.querySelector('.avatars-grid');
+            container.innerHTML = '';
+            reciters.forEach(reciter => {
+                container.innerHTML += `
+                    <div class="sheikh-avatar-container" onclick="selectReciter('${reciter.id}')">
+                        <div class="sheikh-img-circle" style="color: ${reciter.color}; border-color: ${reciter.color}">
+                            <i class="fas ${reciter.icon}"></i>
+                        </div>
+                        <div class="sheikh-name">${reciter.name}</div>
+                    </div>
+                `;
+            });
+        }
 
-            // --- Projectiles Update ---
-            for (let i = projectiles.length - 1; i >= 0; i--) {
-                const p = projectiles[i];
-                p.life -= delta;
-                if (p.life <= 0) {
-                    scene.remove(p.mesh);
-                    projectiles.splice(i, 1);
-                } else {
-                    p.mesh.material.opacity = p.life * 5; // fade out
-                }
-            }
-
-            // --- AI Update ---
-            const playerPos = controls.getObject().position;
+        function selectReciter(id) {
+            currentReciter = reciters.find(r => r.id === id);
+            document.getElementById('sheikhsList').style.display = 'none';
+            document.getElementById('surahPlaylist').style.display = 'block';
+            document.getElementById('selectedSheikhName').innerText = currentReciter.name;
             
-            enemies.forEach(e => {
-                const dist = e.mesh.position.distanceTo(playerPos);
-                
-                // Simple Chase
-                if (dist > 1.5) {
-                    const dir = new THREE.Vector3().subVectors(playerPos, e.mesh.position).normalize();
-                    // Ignore Y for movement direction mostly to keep them on ground
-                    e.mesh.position.x += dir.x * e.speed * delta;
-                    e.mesh.position.z += dir.z * e.speed * delta;
-                    e.mesh.lookAt(playerPos.x, e.mesh.position.y, playerPos.z);
-                }
+            renderPlaylist();
+        }
 
-                // Attack
-                if (dist < 20) { // Shooting range
-                    // Raycast to check visibility (blockers only)
-                    const dirToPlayer = new THREE.Vector3().subVectors(playerPos, e.mesh.position).normalize();
-                    const ray = new THREE.Raycaster(e.mesh.position, dirToPlayer);
-                    
-                    // Check intersections with obstacles (buildings, trees)
-                    const intersects = ray.intersectObjects(obstacles); 
-                    
-                    let blocked = false;
-                    if (intersects.length > 0) {
-                        // If closest intersection is an obstacle closer than the player
-                        if (intersects[0].distance < dist) {
-                            blocked = true;
-                        }
-                    }
-                    
-                    // Simple logic: if close enough and not blocked, shoot/damage
-                    if (!blocked && time - e.lastAttack > e.attackRate) {
-                        e.lastAttack = time;
-                        // 10% chance to miss
-                        if (Math.random() > 0.1) {
-                            damagePlayer(Math.floor(Math.random() * 10) + 5);
-                            audio.playShoot('rifle'); // Enemy sound
-                        }
-                    }
-                }
+        function backToSheikhs() {
+            document.getElementById('sheikhsList').style.display = 'block';
+            document.getElementById('surahPlaylist').style.display = 'none';
+            document.getElementById('mainAudio').pause();
+        }
+
+        function renderPlaylist() {
+            const list = document.getElementById('playlistItems');
+            list.innerHTML = '';
+            
+            allSurahs.forEach((surah, index) => {
+                list.innerHTML += `
+                    <div class="surah-list-item" id="surah-item-${index}" onclick="playSurahFromList(${index})">
+                        <span>${surah.number}. ${surah.name}</span>
+                        <i class="fas fa-play-circle" style="color: #ccc;"></i>
+                    </div>
+                `;
+            });
+        }
+
+        function playSurahFromList(index) {
+            currentSurahIndex = index;
+            const surah = allSurahs[index];
+            const audio = document.getElementById('mainAudio');
+            
+            const formattedNum = String(surah.number).padStart(3, '0');
+            audio.src = `${currentReciter.server}${formattedNum}.mp3`;
+            audio.play();
+
+            document.querySelectorAll('.surah-list-item').forEach(el => {
+                el.classList.remove('active');
+                el.querySelector('i').className = 'fas fa-play-circle';
+                el.querySelector('i').style.color = '#ccc';
             });
 
-            renderer.render(scene, camera);
+            const activeItem = document.getElementById(`surah-item-${index}`);
+            activeItem.classList.add('active');
+            activeItem.querySelector('i').className = 'fas fa-volume-up';
+            activeItem.querySelector('i').style.color = 'var(--primary)';
         }
 
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
+        function playNextSurah() {
+            if (currentSurahIndex < allSurahs.length - 1) {
+                playSurahFromList(currentSurahIndex + 1);
+            }
         }
 
-        init();
+        async function openTeacherMode(number, name) {
+            const modal = document.getElementById('teacherModal');
+            const textContainer = document.getElementById('teacherText');
+            const audio = document.getElementById('teacherAudio');
+            const title = document.getElementById('teacherSurahName');
+
+            modal.style.display = 'flex';
+            title.innerText = `هيا نحفظ: ${name}`;
+            textContainer.innerHTML = 'جاري التحميل...';
+
+            const formattedNum = String(number).padStart(3, '0');
+            audio.src = `${KIDS_AUDIO_SERVER}${formattedNum}.mp3`;
+            audio.play().catch(e => console.log("Auto-play blocked, interaction needed"));
+
+            try {
+                const res = await fetch(`${API_TEXT}/surah/${number}/quran-uthmani`);
+                const data = await res.json();
+                
+                let html = "";
+                if(number != 1 && number != 9) html += `<div style="color:#d35400; font-size:30px; margin-bottom:20px;">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>`;
+                
+                data.data.ayahs.forEach(ayah => {
+                    let text = ayah.text;
+                    if(number != 1 && ayah.numberInSurah === 1) text = text.replace("بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ", "").trim();
+                    html += `<div style="margin-bottom:20px; padding:10px; background:white; border-radius:15px; box-shadow:0 2px 5px rgba(0,0,0,0.1)">${text} <span style="color:#e67e22">(${toArabicNum(ayah.numberInSurah)})</span></div>`;
+                });
+                textContainer.innerHTML = html;
+
+            } catch(e) { textContainer.innerHTML = "حدث خطأ في تحميل النص"; }
+        }
+
+        function closeTeacherMode() {
+            document.getElementById('teacherModal').style.display = 'none';
+            document.getElementById('teacherAudio').pause();
+        }
+
+        function toArabicNum(n) {
+            return n.toString().replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
+        }
+
     </script>
 </body>
 </html>
