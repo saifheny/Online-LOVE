@@ -103,6 +103,7 @@
         .main-content {
             flex: 1;
             padding: 20px;
+            padding-bottom: 100px;
             overflow-y: auto;
             position: relative;
         }
@@ -188,12 +189,6 @@
             margin-bottom: 10px;
             overflow: hidden;
         }
-        
-        .sheikh-img-circle img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
 
         .sheikh-name {
             font-weight: 700;
@@ -241,11 +236,6 @@
         .surah-list-item:hover, .surah-list-item.active {
             background: #e0f2f1;
             border-right-color: var(--primary);
-        }
-
-        .audio-status {
-            font-size: 0.8rem;
-            color: var(--gold);
         }
 
         .kids-grid {
@@ -306,13 +296,91 @@
             cursor: pointer;
         }
 
+        .tasbih-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+            text-align: center;
+        }
+
+        .tasbih-circle {
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: var(--white);
+            border: 8px solid var(--primary);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: 0.1s;
+            user-select: none;
+            margin: 30px 0;
+        }
+
+        .tasbih-circle:active {
+            transform: scale(0.95);
+            background: #f0f0f0;
+        }
+
+        .tasbih-count {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .tasbih-label {
+            font-size: 1rem;
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .tasbih-actions {
+            display: flex;
+            gap: 20px;
+        }
+
+        .tasbih-btn {
+            padding: 10px 25px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-reset { background: #eee; color: #333; }
+        .btn-reset:hover { background: #ddd; }
+
+        .tasbih-select {
+            padding: 12px;
+            border-radius: 12px;
+            border: 2px solid var(--primary);
+            width: 100%;
+            max-width: 300px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
         @media (max-width: 768px) {
-            body { flex-direction: column-reverse; }
+            body { flex-direction: column; }
             .sidebar {
-                width: 100%; height: 70px; flex-direction: row; justify-content: space-around; padding: 0;
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+                height: 75px;
+                flex-direction: row;
+                justify-content: space-around;
+                padding: 0;
+                border-top: 1px solid #ddd;
             }
             .nav-item { margin: 0; }
-            .main-content { height: calc(100vh - 70px); }
+            .main-content { height: 100vh; padding-bottom: 120px; }
             .quran-text { font-size: 20px; }
             .big-ayah-text { font-size: 30px; }
         }
@@ -329,6 +397,7 @@
         <div class="nav-item active" onclick="switchTab('quran')"><i class="fas fa-book-open"></i></div>
         <div class="nav-item" onclick="switchTab('audio')"><i class="fas fa-headphones"></i></div>
         <div class="nav-item" onclick="switchTab('kids')"><i class="fas fa-child"></i></div>
+        <div class="nav-item" onclick="switchTab('tasbih')"><i class="fas fa-fingerprint"></i></div>
     </nav>
 
     <main class="main-content">
@@ -349,11 +418,9 @@
         </section>
 
         <section id="audio" class="section">
-            
             <div id="sheikhsList">
                 <h2 style="margin-bottom: 20px; color: var(--primary);">اختر القارئ</h2>
-                <div class="avatars-grid">
-                </div>
+                <div class="avatars-grid"></div>
             </div>
 
             <div id="surahPlaylist" class="sheikh-playlist">
@@ -364,11 +431,8 @@
                         <p style="font-size: 0.8rem; color: #666;">التشغيل التلقائي مفعل <i class="fas fa-check-circle" style="color: green;"></i></p>
                     </div>
                 </div>
-                
                 <audio id="mainAudio" controls style="width: 100%; margin-bottom: 15px;"></audio>
-                
-                <div id="playlistItems">
-                </div>
+                <div id="playlistItems"></div>
             </div>
         </section>
 
@@ -379,24 +443,42 @@
             <div class="kids-grid" id="kidsGrid"></div>
         </section>
 
+        <section id="tasbih" class="section">
+            <div class="tasbih-container">
+                <h2 style="color: var(--primary); margin-bottom: 20px;">السبحة الإلكترونية</h2>
+                <select id="tasbihType" class="tasbih-select">
+                    <option>سبحان الله</option>
+                    <option>الحمد لله</option>
+                    <option>لا إله إلا الله</option>
+                    <option>الله أكبر</option>
+                    <option>أستغفر الله</option>
+                    <option>اللهم صلِ على محمد</option>
+                </select>
+                
+                <div class="tasbih-circle" onclick="incrementTasbih()">
+                    <span class="tasbih-label">اضغط للتسبيح</span>
+                    <span id="tasbihCount" class="tasbih-count">0</span>
+                </div>
+
+                <div class="tasbih-actions">
+                    <button class="tasbih-btn btn-reset" onclick="resetTasbih()">إعادة ضبط</button>
+                </div>
+            </div>
+        </section>
+
     </main>
 
     <div id="teacherModal" class="teacher-modal">
         <button class="close-teacher" onclick="closeTeacherMode()">خروج</button>
         <div class="teacher-content">
             <h2 id="teacherSurahName" style="color: var(--primary); margin-bottom: 20px;"></h2>
-            
             <audio id="teacherAudio" controls style="width: 80%; margin: 0 auto; display: block;"></audio>
-            
-            <div id="teacherText" class="big-ayah-text">
-                جاري التحميل...
-            </div>
+            <div id="teacherText" class="big-ayah-text">جاري التحميل...</div>
         </div>
     </div>
 
     <script>
         const API_TEXT = "https://api.alquran.cloud/v1";
-        
         const KIDS_AUDIO_SERVER = "https://server6.mp3quran.net/husr_m/"; 
         
         const reciters = [
@@ -413,6 +495,7 @@
         let allSurahs = [];
         let currentReciter = null;
         let currentSurahIndex = 0; 
+        let tasbihCounter = 0;
 
         window.onload = async () => {
             setTimeout(() => {
@@ -462,6 +545,7 @@
             if(tab === 'quran') navs[0].classList.add('active');
             if(tab === 'audio') navs[1].classList.add('active');
             if(tab === 'kids') navs[2].classList.add('active');
+            if(tab === 'tasbih') navs[3].classList.add('active');
         }
 
         async function loadQuranSurah(number) {
@@ -558,7 +642,7 @@
             
             const formattedNum = String(surah.number).padStart(3, '0');
             audio.src = `${currentReciter.server}${formattedNum}.mp3`;
-            audio.play();
+            audio.play().catch(e => console.error("Audio failed"));
 
             document.querySelectorAll('.surah-list-item').forEach(el => {
                 el.classList.remove('active');
@@ -590,7 +674,8 @@
 
             const formattedNum = String(number).padStart(3, '0');
             audio.src = `${KIDS_AUDIO_SERVER}${formattedNum}.mp3`;
-            audio.play().catch(e => console.log("Auto-play blocked, interaction needed"));
+            audio.load();
+            audio.play().catch(e => console.log("Play blocked"));
 
             try {
                 const res = await fetch(`${API_TEXT}/surah/${number}/quran-uthmani`);
@@ -602,7 +687,7 @@
                 data.data.ayahs.forEach(ayah => {
                     let text = ayah.text;
                     if(number != 1 && ayah.numberInSurah === 1) text = text.replace("بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ", "").trim();
-                    html += `<div style="margin-bottom:20px; padding:10px; background:white; border-radius:15px; box-shadow:0 2px 5px rgba(0,0,0,0.1)">${text} <span style="color:#e67e22">(${toArabicNum(ayah.numberInSurah)})</span></div>`;
+                    html += `<div style="margin-bottom:20px; padding:15px; background:white; border-radius:15px; box-shadow:0 2px 5px rgba(0,0,0,0.1)">${text} <span style="color:#e67e22">(${toArabicNum(ayah.numberInSurah)})</span></div>`;
                 });
                 textContainer.innerHTML = html;
 
@@ -614,10 +699,20 @@
             document.getElementById('teacherAudio').pause();
         }
 
+        function incrementTasbih() {
+            tasbihCounter++;
+            document.getElementById('tasbihCount').innerText = tasbihCounter;
+            if (window.navigator.vibrate) window.navigator.vibrate(50);
+        }
+
+        function resetTasbih() {
+            tasbihCounter = 0;
+            document.getElementById('tasbihCount').innerText = '0';
+        }
+
         function toArabicNum(n) {
             return n.toString().replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
         }
-
     </script>
 </body>
 </html>
